@@ -119,11 +119,11 @@ def administration(request):
     staff_members = FacultyMember.objects.filter(category='staff', is_active=True).order_by('order', 'id')
     
     # Keep old Teacher model data for backward compatibility (if needed)
-    special_officers = Teacher.objects.filter(category='special_officer').order_by('id')
-    teachers = Teacher.objects.filter(category='teacher').order_by('id')
-    management_board = Teacher.objects.filter(category='management_board').order_by('id')
-    administration_officers = Teacher.objects.filter(category='administration').order_by('id')
-    kormochari_members = Teacher.objects.filter(category='kormochari').order_by('id')
+    # special_officers = Teacher.objects.filter(category='special_officer').order_by('id')
+    # teachers = Teacher.objects.filter(category='teacher').order_by('id')
+    # management_board = Teacher.objects.filter(category='management_board').order_by('id')
+    # administration_officers = Teacher.objects.filter(category='administration').order_by('id')
+    # kormochari_members = Teacher.objects.filter(category='kormochari').order_by('id')
 
     administration_data = {
         # New FacultyMember data
@@ -133,11 +133,11 @@ def administration(request):
         'staff_members': staff_members,
         
         # Old Teacher model data (for backward compatibility)
-        'special_officers': special_officers,
-        'teachers': teachers,
-        'management_board': management_board,
-        'administration_officers': administration_officers,
-        'kormochari_members': kormochari_members,
+        'special_officers': staff_members,
+        'teachers': teacher_members,
+        'management_board': management_members,
+        'administration_officers': administration_members,
+        'kormochari_members': staff_members,
         'slider_images': slider_images,
     }
     return render(request, 'website/administration.html', administration_data)

@@ -1,6 +1,6 @@
 <section class="container mx-auto max-w-[90rem] my-10 p-6">
   <h2 class="sans text-3xl font-semibold text-center mb-8">গ্যালারি</h2>
-  <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 lg:grid-rows-2">
+  <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
     {% for img in gallery_images %}
       <div class="overflow-hidden rounded-lg shadow-lg group flex justify-center items-center cursor-pointer" 
            onclick="openGalleryModal('{{ img.image.url }}', '{{ img.title|default:"Gallery Image" }}')">
