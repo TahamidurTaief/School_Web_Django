@@ -1,0 +1,599 @@
+{% extends "website/base.html" %}
+{% load static %}
+
+{% block head %}
+<title>সাম্প্রতিক খবর - {{ school_info.name }}</title>
+<meta name="description" content="আমাদের প্রতিষ্ঠানের সাম্প্রতিক ইভেন্ট ও সংবাদসমূহ দেখুন">
+<style>
+    /* Custom animations and styling */
+    .fade-in {
+        animation: fadeIn 0.6s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-hover {
+        transition: all 0.3s ease;
+    }
+    
+    .card-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+
+    .image-slider {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+    }
+
+    .slider-container {
+        display: flex;
+        transition: transform 0.5s ease-in-out;
+    }
+
+    .slider-image {
+        flex: 0 0 100%;
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .slider-controls {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+    }
+
+    .slider-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.5);
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .slider-dot.active {
+        background: white;
+        transform: scale(1.2);
+    }
+
+    .modal-backdrop {
+        backdrop-filter: blur(8px);
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+        animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-50px) scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    /* Custom scrollbar for modal */
+    .modal-content::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .modal-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+    
+    .modal-content::-webkit-scrollbar-thumb {
+        background: #c1c1c1;
+        border-radius: 3px;
+    }
+
+    .section-title {
+        position: relative;
+        display: inline-block;
+    }
+
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(90deg, #3B82F6, #10B981);
+        border-radius: 2px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
+    <div class="max-w-7xl container mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Page Header -->
+        <div class="text-center mb-12 fade-in">
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
+                সাম্প্রতিক খবর
+            </h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
+                আমাদের প্রতিষ্ঠানের সাম্প্রতিক ইভেন্ট ও গুরুত্বপূর্ণ সংবাদসমূহ
+            </p>
+            
+            <!-- Statistics -->
+            <div class="flex justify-center items-center gap-8 text-sm text-gray-500">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-calendar-alt text-blue-500"></i>
+                    <span>{{ total_events }} টি ইভেন্ট</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-newspaper text-green-500"></i>
+                    <span>{{ total_news }} টি সংবাদ</span>
+                </div>
+            </div>
+            
+            <!-- Decorative Line -->
+            <div class="mt-8 flex justify-center">
+                <div class="w-32 h-1 bg-gradient-to-r from-blue-500 to-green-500 rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Events Section -->
+        <section class="mb-16 fade-in">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 section-title">
+                    <i class="fas fa-calendar-star text-blue-500 mr-3"></i>
+                    ইভেন্টসমূহ
+                </h2>
+                <div class="text-sm text-gray-500">
+                    মোট {{ total_events }} টি ইভেন্ট
+                </div>
+            </div>
+            
+            {% if events %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for event in events %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                    <!-- Image Section with Slider -->
+                    <div class="image-slider relative">
+                        {% if event.primary_image %}
+                            {% if event.gallery_images.exists %}
+                            <div class="slider-container" id="slider-{{ event.id }}">
+                                <!-- Primary Image -->
+                                <img src="{{ event.primary_image.url }}" alt="{{ event.title }}" class="slider-image">
+                                <!-- Gallery Images -->
+                                {% for img in event.gallery_images.all %}
+                                <img src="{{ img.image.url }}" alt="{{ img.title|default:event.title }}" class="slider-image">
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Slider Controls -->
+                            {% if event.gallery_images.exists %}
+                            <div class="slider-controls" id="controls-{{ event.id }}">
+                                <span class="slider-dot active" data-slide="0"></span>
+                                {% for img in event.gallery_images.all %}
+                                <span class="slider-dot" data-slide="{{ forloop.counter }}"></span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <img src="{{ event.primary_image.url }}" alt="{{ event.title }}" class="w-full h-48 object-cover">
+                            {% endif %}
+                        {% else %}
+                        <!-- Placeholder when no image -->
+                        <div class="w-full h-48 bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-calendar-star text-4xl text-blue-400 mb-2"></i>
+                                <p class="text-blue-600 font-medium">ইভেন্ট</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Event Badge -->
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-calendar mr-1"></i>
+                                ইভেন্ট
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                            {{ event.title }}
+                        </h3>
+                        
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                            {{ event.description|truncatewords:20 }}
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>
+                                {{ event.created_at|date:"d M, Y" }}
+                            </div>
+                            
+                            <button 
+                                onclick="openModal({{ event.id }})"
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-eye mr-1"></i>
+                                বিস্তারিত দেখুন
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-500 text-lg">কোনো ইভেন্ট পাওয়া যায়নি</p>
+            </div>
+            {% endif %}
+        </section>
+
+        <!-- News Section -->
+        <section class="fade-in">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 section-title">
+                    <i class="fas fa-newspaper text-green-500 mr-3"></i>
+                    সংবাদসমূহ
+                </h2>
+                <div class="text-sm text-gray-500">
+                    মোট {{ total_news }} টি সংবাদ
+                </div>
+            </div>
+            
+            {% if news %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for item in news %}
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+                    <!-- Image Section with Slider -->
+                    <div class="image-slider relative">
+                        {% if item.primary_image %}
+                            {% if item.gallery_images.exists %}
+                            <div class="slider-container" id="slider-{{ item.id }}">
+                                <!-- Primary Image -->
+                                <img src="{{ item.primary_image.url }}" alt="{{ item.title }}" class="slider-image">
+                                <!-- Gallery Images -->
+                                {% for img in item.gallery_images.all %}
+                                <img src="{{ img.image.url }}" alt="{{ img.title|default:item.title }}" class="slider-image">
+                                {% endfor %}
+                            </div>
+                            
+                            <!-- Slider Controls -->
+                            {% if item.gallery_images.exists %}
+                            <div class="slider-controls" id="controls-{{ item.id }}">
+                                <span class="slider-dot active" data-slide="0"></span>
+                                {% for img in item.gallery_images.all %}
+                                <span class="slider-dot" data-slide="{{ forloop.counter }}"></span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% else %}
+                            <img src="{{ item.primary_image.url }}" alt="{{ item.title }}" class="w-full h-48 object-cover">
+                            {% endif %}
+                        {% else %}
+                        <!-- Placeholder when no image -->
+                        <div class="w-full h-48 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                            <div class="text-center">
+                                <i class="fas fa-newspaper text-4xl text-green-400 mb-2"></i>
+                                <p class="text-green-600 font-medium">সংবাদ</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- News Badge -->
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-newspaper mr-1"></i>
+                                সংবাদ
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
+                            {{ item.title }}
+                        </h3>
+                        
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                            {{ item.description|truncatewords:20 }}
+                        </p>
+                        
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs text-gray-500">
+                                <i class="fas fa-clock mr-1"></i>
+                                {{ item.created_at|date:"d M, Y" }}
+                            </div>
+                            
+                            <button 
+                                onclick="openModal({{ item.id }})"
+                                class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-eye mr-1"></i>
+                                বিস্তারিত দেখুন
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-newspaper text-4xl text-gray-400 mb-4"></i>
+                <p class="text-gray-500 text-lg">কোনো সংবাদ পাওয়া যায়নি</p>
+            </div>
+            {% endif %}
+        </section>
+    </div>
+</div>
+
+<!-- Modal for Details -->
+<div id="detailModal" class="fixed inset-0 z-50 hidden">
+    <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-60" style="backdrop-filter: blur(8px);" onclick="closeModal()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full modal-content">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 border-b">
+                <div class="flex items-center">
+                    <span id="modalBadge" class="px-3 py-1 rounded-full text-sm font-medium mr-3"></span>
+                    <h2 id="modalTitle" class="text-2xl font-bold text-gray-900"></h2>
+                </div>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="p-6">
+                <!-- Left side - Image, Right side - Content -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Left Column - Images -->
+                    <div class="space-y-4">
+                        <!-- Primary image -->
+                        <div id="modalPrimaryImage" class=""></div>
+                        
+                        <!-- Gallery Slider -->
+                        <div id="modalGallery" class="hidden">
+                            <h3 class="text-lg font-semibold mb-3 text-gray-900">
+                                <i class="fas fa-images mr-2"></i>
+                                আরও ছবি
+                            </h3>
+                            <div class="image-slider relative">
+                                <div id="modalSliderContainer" class="slider-container"></div>
+                                <div id="modalSliderControls" class="slider-controls"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Column - Content -->
+                    <div class="space-y-4">
+                        <!-- Description -->
+                        <div>
+                            <h3 class="text-lg font-semibold mb-3 text-gray-900">
+                                <i class="fas fa-align-left mr-2"></i>
+                                বিস্তারিত বিবরণ
+                            </h3>
+                            <div id="modalDescription" class="text-gray-700 leading-relaxed"></div>
+                        </div>
+                        
+                        <!-- Metadata -->
+                        <div class="flex flex-col space-y-2 text-sm text-gray-500 border-t pt-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar mr-2"></i>
+                                <span id="modalDate"></span>
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-2"></i>
+                                <span id="modalTime"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize all sliders
+    initializeSliders();
+});
+
+function initializeSliders() {
+    // Initialize sliders for all cards
+    document.querySelectorAll('.image-slider').forEach(slider => {
+        const container = slider.querySelector('.slider-container');
+        const controls = slider.querySelector('.slider-controls');
+        
+        if (!container || !controls) return;
+        
+        const dots = controls.querySelectorAll('.slider-dot');
+        let currentSlide = 0;
+        
+        // Auto-slide functionality
+        let autoSlideInterval = setInterval(() => {
+            currentSlide = (currentSlide + 1) % dots.length;
+            updateSlider(container, dots, currentSlide);
+        }, 4000);
+        
+        // Manual control
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                updateSlider(container, dots, currentSlide);
+                
+                // Reset auto-slide
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = setInterval(() => {
+                    currentSlide = (currentSlide + 1) % dots.length;
+                    updateSlider(container, dots, currentSlide);
+                }, 4000);
+            });
+        });
+        
+        // Pause on hover
+        slider.addEventListener('mouseenter', () => clearInterval(autoSlideInterval));
+        slider.addEventListener('mouseleave', () => {
+            autoSlideInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % dots.length;
+                updateSlider(container, dots, currentSlide);
+            }, 4000);
+        });
+    });
+}
+
+function updateSlider(container, dots, index) {
+    container.style.transform = `translateX(-${index * 100}%)`;
+    
+    dots.forEach(dot => dot.classList.remove('active'));
+    dots[index].classList.add('active');
+}
+
+async function openModal(id) {
+    try {
+        const response = await fetch(`{% url 'event_news_detail' 0 %}`.replace('0', id));
+        const result = await response.json();
+        
+        if (result.success) {
+            const data = result.data;
+            
+            // Update modal content
+            document.getElementById('modalTitle').textContent = data.title;
+            
+            // Set badge based on type
+            const badge = document.getElementById('modalBadge');
+            if (data.type === 'EVENT') {
+                badge.className = 'bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium mr-3';
+                badge.innerHTML = '<i class="fas fa-calendar mr-1"></i>ইভেন্ট';
+            } else {
+                badge.className = 'bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium mr-3';
+                badge.innerHTML = '<i class="fas fa-newspaper mr-1"></i>সংবাদ';
+            }
+            
+            // Primary image
+            const primaryImageDiv = document.getElementById('modalPrimaryImage');
+            if (data.primary_image) {
+                primaryImageDiv.innerHTML = 
+                    `<img src="${data.primary_image}" alt="${data.title}" class="w-full h-64 object-cover rounded-lg">`;
+            } else {
+                // Show placeholder based on type
+                const bgColor = data.type === 'EVENT' ? 'from-blue-100 to-blue-200' : 'from-green-100 to-green-200';
+                const iconColor = data.type === 'EVENT' ? 'text-blue-400' : 'text-green-400';
+                const textColor = data.type === 'EVENT' ? 'text-blue-600' : 'text-green-600';
+                const icon = data.type === 'EVENT' ? 'fa-calendar-star' : 'fa-newspaper';
+                
+                primaryImageDiv.innerHTML = `
+                    <div class="w-full h-64 bg-gradient-to-br ${bgColor} flex items-center justify-center rounded-lg">
+                        <div class="text-center">
+                            <i class="fas ${icon} text-6xl ${iconColor} mb-3"></i>
+                            <p class="${textColor} font-medium text-lg">${data.type_display}</p>
+                        </div>
+                    </div>`;
+            }
+            
+            // Gallery
+            const gallery = document.getElementById('modalGallery');
+            if (data.gallery_images && data.gallery_images.length > 0) {
+                gallery.classList.remove('hidden');
+                
+                const sliderContainer = document.getElementById('modalSliderContainer');
+                const sliderControls = document.getElementById('modalSliderControls');
+                
+                // Build gallery slider
+                sliderContainer.innerHTML = data.gallery_images.map(img => 
+                    `<img src="${img.url}" alt="${img.title || data.title}" class="slider-image">`
+                ).join('');
+                
+                sliderControls.innerHTML = data.gallery_images.map((_, index) => 
+                    `<span class="slider-dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></span>`
+                ).join('');
+                
+                // Initialize modal slider
+                initializeModalSlider();
+            } else {
+                gallery.classList.add('hidden');
+            }
+            
+            // Description
+            document.getElementById('modalDescription').innerHTML = data.description.replace(/\n/g, '<br>');
+            
+            // Date and time
+            document.getElementById('modalDate').textContent = data.created_at;
+            document.getElementById('modalTime').textContent = data.created_at_time;
+            
+            // Show modal
+            document.getElementById('detailModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+        } else {
+            alert('বিস্তারিত তথ্য লোড করতে সমস্যা হয়েছে।');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('বিস্তারিত তথ্য লোড করতে সমস্যা হয়েছে।');
+    }
+}
+
+function initializeModalSlider() {
+    const container = document.getElementById('modalSliderContainer');
+    const controls = document.getElementById('modalSliderControls');
+    const dots = controls.querySelectorAll('.slider-dot');
+    
+    if (dots.length <= 1) return;
+    
+    let currentSlide = 0;
+    
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            currentSlide = index;
+            updateSlider(container, dots, currentSlide);
+        });
+    });
+    
+    // Auto-slide for modal
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % dots.length;
+        updateSlider(container, dots, currentSlide);
+    }, 3000);
+}
+
+function closeModal() {
+    document.getElementById('detailModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeModal();
+    }
+});
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-backdrop')) {
+        closeModal();
+    }
+});
+</script>
+
+{% endblock %}

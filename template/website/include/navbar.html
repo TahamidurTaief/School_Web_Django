@@ -1,0 +1,214 @@
+{% load static %}
+
+
+<!-- Top Bar with Social Media Icons -->
+<div class="bg-gray-800 text-white text-sm py-2 w-full">
+  <div class="container mx-auto max-w-7xl px-4 flex justify-between items-center">
+    <!-- Left Side - Notice/Welcome Message -->
+    <div class="flex-1">
+      {% if latest_notices %}
+      <marquee class="text-white text-sm font-medium" behavior="scroll" direction="left" scrollamount="4">
+        <i class="fas fa-bell mr-2"></i>
+        {% for notice in latest_notices %}
+          <span class="inline-flex items-center">
+            <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full mr-2">নোটিশ</span>
+            {{ notice.short_description }}
+          </span>
+          {% if not forloop.last %}
+            <span class="mx-4 text-yellow-300">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </span>
+          {% endif %}
+        {% endfor %}
+      </marquee>
+      {% elif latest_notice %}
+      <marquee class="text-white text-sm font-medium" behavior="scroll" direction="left" scrollamount="4">
+        <i class="fas fa-bell mr-2"></i>সর্বশেষ নোটিশ: {{ latest_notice.short_description }}
+      </marquee>
+      {% elif school_info %}
+      <span class="text-gray-200">{{ school_info.name }}</span>
+      {% else %}
+      <span class="text-gray-200">আমাদের ওয়েব সাইটে আপনাকে স্বাগতম</span>
+      {% endif %}
+    </div>
+    
+    <!-- Right Side - Social Media Icons -->
+    {% if school_info %}
+    <div class="flex items-center space-x-1 pl-5">
+      <span class="text-gray-300 text-xs mr-3 hidden sm:inline">আমাদের সাথে যুক্ত থাকুন:</span>
+      {% if school_info.facebook_url %}
+      <a href="{{ school_info.facebook_url }}" target="_blank" rel="noopener noreferrer" 
+         class="w-8 h-8 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+         title="Facebook">
+        <i class="fab fa-facebook-f text-sm"></i>
+      </a>
+      {% endif %}
+      {% if school_info.instagram_url %}
+      <a href="{{ school_info.instagram_url }}" target="_blank" rel="noopener noreferrer"
+         class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+         title="Instagram">
+        <i class="fab fa-instagram text-sm"></i>
+      </a>
+      {% endif %}
+      {% if school_info.youtube_url %}
+      <a href="{{ school_info.youtube_url }}" target="_blank" rel="noopener noreferrer"
+         class="w-8 h-8 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+         title="YouTube">
+        <i class="fab fa-youtube text-sm"></i>
+      </a>
+      {% endif %}
+      {% if school_info.linkedin_url %}
+      <a href="{{ school_info.linkedin_url }}" target="_blank" rel="noopener noreferrer"
+         class="w-8 h-8 bg-blue-700 hover:bg-blue-800 rounded-full flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+         title="LinkedIn">
+        <i class="fab fa-linkedin-in text-sm"></i>
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="bg-white py-4 border-b w-full">
+  <div class="container mx-auto max-w-7xl px-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <a href="{% url 'home' %}" class="flex items-center">
+        {% comment %} {% if school_info.logo %} {% endcomment %}
+        <img src="{{ school_info.logo.url }}" alt="Logo" class="w-20 h-20 mr-4" />
+        {% comment %} {% else %}
+        <img src="{% static 'logo.png' %}" alt="Logo" class="w-20 h-20 mr-4" />
+        {% endif %} {% endcomment %}
+        <div class="flex flex-col">
+          <span class="font-bold text-3xl text-[var(--color-primary)]">{{ school_info.name }}</span>
+          {% if school_info.reg_no %}
+          <span class="text-base text-gray-600 font-medium">{{ school_info.reg_no }}</span>
+          {% endif %}
+        </div>
+      </a>
+    </div>
+    <button x-data="{}" @click="$dispatch('open-sidebar', true)" class="md:hidden ml-4 text-gray-700 focus:outline-none" aria-label="Toggle menu">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+    <div class="hidden md:flex items-center space-x-6">
+      {% if school_info %}
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-mobile-alt text-xl text-[var(--color-primary)]"></i>
+        <div>
+          <p class="text-sm font-semibold text-gray-800">আমাদেরকে কল করুন</p>
+          <p class="text-xs text-gray-600">{{ school_info.phone }}</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <i class="fas fa-at text-xl text-[var(--color-primary)]"></i>
+        <div>
+          <p class="text-sm font-semibold text-gray-800">আমাদেরকে ই-মেইল করুন</p>
+          <p class="text-xs text-gray-600">{{ school_info.email }}</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <i class="fas fa-map-marked-alt text-xl text-[var(--color-primary)]"></i>
+        <div>
+          <p class="text-sm font-semibold text-gray-800">আমাদের ঠিকানা</p>
+          <p class="text-xs text-gray-600">{{ school_info.address }}</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<nav class="bg-[var(--color-primary)] text-white w-full" x-data="{ sidebarOpen: false }" @open-sidebar.window="sidebarOpen = true" @keydown.window.escape="sidebarOpen = false">
+  <div class="container mx-auto max-w-7xl px-4 flex items-center justify-center">
+    <ul class="hidden md:flex flex-row space-x-1 items-center">
+        <li><a href="{% url 'home' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300" title="Home"><i class="fas fa-home"></i></a></li>
+        <li><a href="{% url 'about' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">আমাদের সম্পর্কে</a></li>
+        <li><a href="{% url 'administration' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">প্রশাসন</a></li>
+        <li><a href="{% url 'students' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">শিক্ষার্থীদের তথ্য</a></li>
+        <li class="relative group">
+            <a href="#" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300 flex items-center gap-1">ডাউনলোডস<i class="fas fa-chevron-down text-xs ml-1"></i></a>
+            <ul class="absolute top-full mt-0 bg-white text-gray-900 rounded-b shadow-lg hidden group-hover:block min-w-[150px] z-10">
+              <li><a href="{% url 'routine' %}" class="block px-4 py-2 hover:bg-gray-200 transition-all ease-in-out duration-300">রুটিন</a></li>
+              <li><a href="{% url 'books' %}" class="block px-4 py-2 hover:bg-gray-200 transition-all ease-in-out duration-300">বইসমূহ</a></li>
+              <li><a href="{% url 'syllabus' %}" class="block px-4 py-2 hover:bg-gray-200 transition-all ease-in-out duration-300">পাঠ্যক্রম</a></li>
+            </ul>
+        </li>
+        <li><a href="{% url 'admission_list' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">ভর্তি</a></li>
+        <li><a href="{% url 'notice_list' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">নোটিশ</a></li>
+        <li><a href="{% url 'result_list' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">ফলাফল</a></li>
+        <li><a href="{% url 'samprotik_khobor' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">সাম্প্রতিক খবর</a></li>
+        <li><a href="{% url 'gallery_list' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">গ্যালারি</a></li>
+        <li><a href="{% url 'contact' %}" class="block py-4 px-3 rounded hover:bg-[var(--color-secondary)] transition-all ease-in-out duration-300">যোগাযোগ</a></li>
+    </ul>
+
+    <div x-show="sidebarOpen" class="fixed inset-0 z-40 flex md:hidden justify-end" style="display: none">
+      <div class="fixed inset-0 bg-black bg-opacity-50" @click="sidebarOpen = false"></div>
+      <aside class="w-80 max-w-full h-full bg-white text-gray-900 shadow-xl transform transition-transform duration-300 ease-in-out translate-x-full fixed right-0 top-0 flex flex-col justify-between" :class="{ 'translate-x-0': sidebarOpen, 'translate-x-full': !sidebarOpen }" @click.away="sidebarOpen = false">
+        <button class="absolute top-4 right-4 text-gray-700 hover:text-red-600 text-2xl" @click="sidebarOpen = false" aria-label="Close sidebar"><i class="fas fa-times"></i></button>
+        <nav class="flex flex-col h-full pt-16 pb-6 px-6 overflow-y-auto">
+          <ul class="flex-1 flex flex-col gap-2">
+              <li><a href="{% url 'home' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300"><i class="fas fa-home mr-2"></i>প্রচ্ছদ</a></li>
+              <li><a href="{% url 'about' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">আমাদের সম্পর্কে</a></li>
+              <li><a href="{% url 'administration' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">প্রশাসন</a></li>
+              <li><a href="{% url 'students' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">শিক্ষার্থীদের তথ্য</a></li>
+              <li x-data="{ open: false }">
+                  <button @click="open = !open" class="w-full text-left flex items-center justify-between py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">
+                    <span>ডাউনলোডস</span>
+                    <i class="fas fa-chevron-down text-xs ml-1 transition-transform" :class="{'rotate-180': open}"></i>
+                  </button>
+                  <ul x-show="open" class="pl-4 mt-1" style="display: none;">
+                    <li><a href="{% url 'routine' %}" class="block px-4 py-2 hover:bg-gray-200 rounded-lg">রুটিন</a></li>
+                    <li><a href="{% url 'books' %}" class="block px-4 py-2 hover:bg-gray-200 rounded-lg">বইসমূহ</a></li>
+                    <li><a href="{% url 'syllabus' %}" class="block px-4 py-2 hover:bg-gray-200 rounded-lg">পাঠ্যক্রম</a></li>
+                  </ul>
+              </li>
+              <li><a href="{% url 'admission_list' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">ভর্তি</a></li>
+              <li><a href="{% url 'notice_list' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">নোটিশ</a></li>
+              <li><a href="{% url 'result_list' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">ফলাফল</a></li>
+              <li><a href="{% url 'samprotik_khobor' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">সাম্প্রতিক খবর</a></li>
+              <li><a href="{% url 'gallery_list' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">গ্যালারি</a></li>
+              <li><a href="{% url 'contact' %}" class="block py-2 px-4 rounded-lg hover:bg-[var(--color-primary)] hover:text-white transition-all ease-in-out duration-300">যোগাযোগ</a></li>
+          </ul>
+          
+          <!-- Social Media Icons for Mobile -->
+          {% if school_info %}
+          <div class="mt-6 pt-4 border-t border-gray-200">
+            <p class="text-center text-gray-600 text-sm mb-3">আমাদের সাথে যুক্ত থাকুন</p>
+            <div class="flex justify-center space-x-3">
+              {% if school_info.facebook_url %}
+              <a href="{{ school_info.facebook_url }}" target="_blank" rel="noopener noreferrer" 
+                 class="w-10 h-10 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center transition-all duration-300"
+                 title="Facebook">
+                <i class="fab fa-facebook-f text-white"></i>
+              </a>
+              {% endif %}
+              {% if school_info.instagram_url %}
+              <a href="{{ school_info.instagram_url }}" target="_blank" rel="noopener noreferrer"
+                 class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-full flex items-center justify-center transition-all duration-300"
+                 title="Instagram">
+                <i class="fab fa-instagram text-white"></i>
+              </a>
+              {% endif %}
+              {% if school_info.youtube_url %}
+              <a href="{{ school_info.youtube_url }}" target="_blank" rel="noopener noreferrer"
+                 class="w-10 h-10 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-all duration-300"
+                 title="YouTube">
+                <i class="fab fa-youtube text-white"></i>
+              </a>
+              {% endif %}
+              {% if school_info.linkedin_url %}
+              <a href="{{ school_info.linkedin_url }}" target="_blank" rel="noopener noreferrer"
+                 class="w-10 h-10 bg-blue-700 hover:bg-blue-800 rounded-full flex items-center justify-center transition-all duration-300"
+                 title="LinkedIn">
+                <i class="fab fa-linkedin-in text-white"></i>
+              </a>
+              {% endif %}
+            </div>
+          </div>
+          {% endif %}
+        </nav>
+      </aside>
+    </div>
+  </div>
+</nav>

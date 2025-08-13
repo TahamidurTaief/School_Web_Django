@@ -1,0 +1,54 @@
+<section class="w-full mx-auto mt-0">
+  <div class="relative" x-data="{
+    active: 0,
+    images: {{ slider_images|length }},
+    start() {
+      this.interval = setInterval(() => this.next(), 3000);
+    },
+    stop() { clearInterval(this.interval); },
+    next() { this.active = (this.active + 1) % this.images; },
+    prev() { this.active = this.active === 0 ? this.images - 1 : this.active - 1; }
+  }" x-init="start()" @mouseenter="stop()" @mouseleave="start()">
+    <div class="relative overflow-hidden w-full h-[40vw] max-h-[500px]">
+                   {% for img in slider_images %}
+               <div x-show="active === {{ forloop.counter0 }}"
+                    x-transition:enter="transition-all duration-700 ease-in-out"
+                    x-transition:enter-start="opacity-0 translate-x-16"
+                    x-transition:enter-end="opacity-100 translate-x-0"
+                    x-transition:leave="transition-all duration-700 ease-in-out absolute inset-0"
+                    x-transition:leave-start="opacity-100 translate-x-0"
+                    x-transition:leave-end="opacity-0 -translate-x-16"
+                    class="absolute inset-0 w-full h-full">
+                 {% if img.image %}
+                   <img src="{{ img.image.url }}" alt="{{ img.title }}" class="w-full h-full object-cover rounded-none shadow-lg" />
+                 {% else %}
+                   <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 text-gray-600">
+                     <div class="text-center">
+                       <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                       <p class="text-lg font-semibold">ছবি নেই</p>
+                     </div>
+                   </div>
+                 {% endif %}
+                 {% if img.title or img.description %}
+                 <div class="absolute bottom-0 left-0 w-full bg-black/50 text-white p-4">
+                   <h3 class="text-xl font-bold">{{ img.title }}</h3>
+                   <p class="text-sm">{{ img.description }}</p>
+                 </div>
+                 {% endif %}
+               </div>
+             {% endfor %}
+    </div>
+    <button @click="prev()" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 rounded-full p-2 shadow-md focus:outline-none z-10">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+    </button>
+    <button @click="next()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 rounded-full p-2 shadow-md focus:outline-none z-10">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+    </button>
+    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex justify-center space-x-2 bg-white/60 rounded-full px-4 py-2 shadow-md z-10">
+      {% for img in slider_images %}
+        <button @click="active = {{ forloop.counter0 }}" :class="{'bg-blue-600': active === {{ forloop.counter0 }}, 'bg-gray-300': active !== {{ forloop.counter0 }}}" class="w-3 h-3 rounded-full transition-colors duration-300"></button>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script> 

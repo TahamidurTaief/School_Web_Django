@@ -1,0 +1,91 @@
+{% load static %}
+<footer class="bg-gray-800 text-gray-300 pt-12">
+    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+            
+            <!-- Column 1: School Info -->
+            <div class="md:col-span-2 lg:col-span-2">
+                {% if school_info %}
+
+                <a href="{% url 'home' %}" class="flex items-center mb-4">
+                    {% if school_info.logo %}
+                    <img src="{{ school_info.logo.url }}" alt="{{ school_info.name }} Logo" class="h-20 mr-3 bg-white p-1 rounded-full"/>
+                    {% endif %}
+                    <div class="flex flex-col gap-2">
+                        <span class="text-xl font-bold text-white">{{ school_info.name }}</span>
+                        <span class="text-base text-white font-medium">{{ school_info.reg_no }}</span>
+                    </div>
+                </a>
+
+                <p class="text-sm leading-relaxed">
+                    {{ school_info.description|truncatewords:25 }}
+                </p>
+                {% endif %}
+                <div class="flex space-x-4 mt-6">
+                    {% if school_info.facebook_url %}<a href="{{ school_info.facebook_url }}" target="_blank" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-facebook-f text-xl"></i></a>{% endif %}
+                    {% if school_info.instagram_url %}<a href="{{ school_info.instagram_url }}" target="_blank" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-instagram text-xl"></i></a>{% endif %}
+                    {% if school_info.youtube_url %}<a href="{{ school_info.youtube_url }}" target="_blank" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-youtube text-xl"></i></a>{% endif %}
+                    {% if school_info.linkedin_url %}<a href="{{ school_info.linkedin_url }}" target="_blank" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-linkedin-in text-xl"></i></a>{% endif %}
+                </div>
+            </div>
+
+            <!-- Column 2: Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4 tracking-wider">গুরুত্বপূর্ণ লিঙ্ক</h3>
+                <ul class="space-y-2">
+                    {% if footer_links %}
+                        {% for link in footer_links %}
+                        <li><a href="{{ link.url }}" target="_blank" class="hover:text-white transition-colors flex items-center gap-2"><i class="fas fa-chevron-right text-xs"></i>{{ link.title }}</a></li>
+                        {% endfor %}
+                    {% else %}
+                        <li><a href="{% url 'about' %}" class="hover:text-white transition-colors"><i class="fas fa-chevron-right text-xs"></i> আমাদের সম্পর্কে</a></li>
+                        <li><a href="{% url 'notice_list' %}" class="hover:text-white transition-colors"><i class="fas fa-chevron-right text-xs"></i> নোটিশ বোর্ড</a></li>
+                        <li><a href="{% url 'result_list' %}" class="hover:text-white transition-colors"><i class="fas fa-chevron-right text-xs"></i> ফলাফল</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+
+            <!-- Column 3: Navigation -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4 tracking-wider">ন্যাভিগেশন</h3>
+                <ul class="space-y-2">
+                    <li><a href="{% url 'administration' %}" class="hover:text-white transition-colors"><i class="fas fa-chevron-right text-xs"></i> প্রশাসন</a></li>
+                    <li><a href="{% url 'students' %}" class="hover:text-white transition-colors"><i class="fas fa-chevron-right text-xs"></i> শিক্ষার্থীদের তথ্য</a></li>
+                    <li><a href="{% url 'gallery_list' %}" class="hover:text-white transition-colors"><i class="fas fa-chevron-right text-xs"></i> গ্যালারি</a></li>
+                    <li><a href="{% url 'contact' %}" class="hover:text-white transition-colors"><i class="fas fa-chevron-right text-xs"></i> যোগাযোগ</a></li>
+                </ul>
+            </div>
+
+            <!-- Column 4: Contact Info -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4 tracking-wider">যোগাযোগ</h3>
+                {% if school_info %}
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-map-marker-alt mt-1 text-lg text-white"></i>
+                        <span>{{ school_info.address }}</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-mobile-alt text-xl text-white"></i>
+                        <span>{{ school_info.phone }}</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i class="fas fa-envelope mt-1 text-lg text-white"></i>
+                        <span>{{ school_info.email }}</span>
+                    </li>
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Bar with Credit -->
+    <div class="mt-8 border-t border-gray-700">
+        <div class="container mx-auto max-w-7xl px-4 py-4 flex flex-col sm:flex-row justify-between items-center text-sm">
+            <p>&copy; {% now "Y" %} {{ school_info.name|default:"Your School" }}. All Rights Reserved.</p>
+            <p class="mt-2 sm:mt-0">
+                Developed by <a href="https://www.exeyezone.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-white hover:underline">exeyezone.com</a>
+            </p>
+        </div>
+    </div>
+</footer>

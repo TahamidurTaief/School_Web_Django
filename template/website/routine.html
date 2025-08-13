@@ -1,0 +1,181 @@
+{% extends 'website/base.html' %}
+
+{% block title %}রুটিন | SchoolProject{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-gray-50 to-white py-8">
+    <div class="container mx-auto max-w-7xl px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-center text-[var(--color-primary)] mb-8">
+            শ্রেণি ও পরীক্ষার রুটিন
+        </h1>
+
+        <div x-data="{
+            activeTab: 'class',
+            activeType: 'class',
+            activeClass: null,
+            activeDept: null,
+            routines: [],
+            
+            async filterRoutines() {
+                let url = '{% url "filter_routines" %}?type=' + this.activeType;
+                
+                if (this.activeTab === 'class' && this.activeClass) {
+                    url += '&class_id=' + this.activeClass;
+                } 
+                else if (this.activeTab === 'dept' && this.activeDept) {
+                    url += '&dept_slug=' + this.activeDept;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                this.routines = data.routines;
+            },
+            
+            init() {
+                this.filterRoutines();
+            }
+        }" x-init="init()">
+            <!-- Routine Type Selection -->
+            <div class="flex justify-center mb-8">
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button @click="activeType = 'class'; filterRoutines();" 
+                            :class="activeType === 'class' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-l-lg border border-gray-300 font-medium">
+                        <i class="fas fa-calendar-day mr-2"></i> শ্রেণি রুটিন
+                    </button>
+                    <button @click="activeType = 'exam'; filterRoutines();" 
+                            :class="activeType === 'exam' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-r-lg border border-gray-300 font-medium">
+                        <i class="fas fa-calendar-alt mr-2"></i> পরীক্ষার রুটিন
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Selection -->
+            <div class="flex justify-center mb-8">
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button @click="activeTab = 'class'; activeDept = null; filterRoutines();" 
+                            :class="activeTab === 'class' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-l-lg border border-gray-300 font-medium">
+                        <i class="fas fa-graduation-cap mr-2"></i> শ্রেণি অনুযায়ী
+                    </button>
+                    <button @click="activeTab = 'dept'; activeClass = null; filterRoutines();" 
+                            :class="activeTab === 'dept' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-r-lg border border-gray-300 font-medium">
+                        <i class="fas fa-building mr-2"></i> বিভাগ অনুযায়ী
+                    </button>
+                </div>
+            </div>
+
+            <!-- Class/Department Filters -->
+            <div class="mb-8">
+                <!-- Class Filter -->
+                <div x-show="activeTab === 'class'" x-transition class="text-center">
+                    <h3 class="text-xl font-semibold mb-3">শ্রেণি নির্বাচন করুন</h3>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        {% for class in classes %}
+                        <button @click="activeClass = {{ class.id }}; filterRoutines();"
+                                :class="activeClass === {{ class.id }} ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                                class="px-4 py-1 rounded-full border border-gray-300 transition-colors duration-200">
+                            {{ class.name }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Department Filter -->
+                <div x-show="activeTab === 'dept'" x-transition class="text-center">
+                    <h3 class="text-xl font-semibold mb-3">বিভাগ নির্বাচন করুন</h3>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        {% for dept in departments %}
+                        <button @click="activeDept = '{{ dept.slug }}'; filterRoutines();"
+                                :class="activeDept === '{{ dept.slug }}' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                                class="px-4 py-1 rounded-full border border-gray-300 transition-colors duration-200">
+                            {{ dept.name }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Routine List Container -->
+            <div id="routine-list-container">
+                <div class="overflow-hidden rounded-lg shadow-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gradient-to-r from-[var(--color-primary)] to-purple-600">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">ক্রমিক</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">শিরোনাম</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">আপডেট</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">একশন</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <template x-for="(routine, index) in routines" :key="routine.id">
+                                <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="index + 1"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900" x-text="routine.title"></div>
+                                        <div class="text-sm text-gray-500">
+                                            <span x-text="routine.class_name"></span>
+                                            <span x-text="routine.department"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="routine.updated_at"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-3">
+                                            <a :href="routine.file_url"
+                                               x-show="routine.file_url"
+                                               target="_blank"
+                                               class="text-blue-600 hover:text-blue-900 flex items-center gap-1 px-3 py-1 rounded-md hover:bg-blue-50 transition-colors">
+                                                <i class="fas fa-eye"></i> দেখুন
+                                            </a>
+                                            <a :href="routine.download_url"
+                                               target="_blank"
+                                               class="text-green-600 hover:text-green-900 flex items-center gap-1 px-3 py-1 rounded-md hover:bg-green-50 transition-colors">
+                                                <i class="fas fa-download"></i> ডাউনলোড
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="routines.length === 0">
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        <i class="fas fa-file-alt text-3xl mb-2 text-gray-400"></i>
+                                        <p>কোন রুটিন পাওয়া যায়নি</p>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal removed - using direct links instead -->
+
+<style>
+    [x-cloak] { display: none !important; }
+    table {
+        min-width: 100%;
+    }
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    th {
+        background-color: #f9fafb;
+        color: #6b7280;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    tr:hover {
+        background-color: #f9fafb;
+    }
+</style>
+{% endblock %}

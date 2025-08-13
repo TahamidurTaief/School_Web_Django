@@ -1,0 +1,252 @@
+{% extends 'website/base.html' %}
+{% block content %}
+<div class="bg-gradient-to-br from-blue-50 to-blue-100 min-h-screen py-10">
+  <!-- container max-w-7xl width card -->
+  <div class="container max-w-7xl mx-auto px-4">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+      <!-- Grid layout: 2 columns on desktop, 1 column on mobile -->
+      <div class="grid grid-cols-1 lg:grid-cols-2">
+        
+        <!-- Left Column: Map and Contact Info -->
+        <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white p-8 md:p-12">
+          <h2 class="text-3xl font-bold mb-8 flex items-center gap-3">
+            <span class="inline-block"><i class="fas fa-address-book"></i></span> 
+            যোগাযোগের তথ্য
+          </h2>
+          
+          {% if contact_info %}
+            <!-- Contact Information -->
+            <div class="space-y-6 mb-8">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-map-marker-alt text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-lg mb-1">ঠিকানা</h3>
+                  <p class="text-blue-100">{{ contact_info.address }}</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-phone-alt text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-lg mb-1">ফোন নম্বর</h3>
+                  <p class="text-blue-100">{{ contact_info.phone }}</p>
+                </div>
+              </div>
+              
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-envelope text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-lg mb-1">ইমেইল</h3>
+                  <p class="text-blue-100">{{ contact_info.email }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Google Map -->
+            {% if contact_info.map_embed %}
+            <div class="rounded-lg overflow-hidden shadow-lg border-4 border-white border-opacity-20">
+              <div class="aspect-w-16 aspect-h-9 h-64">
+                {{ contact_info.map_embed|safe }}
+              </div>
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="text-red-200 bg-red-500 bg-opacity-20 p-4 rounded-lg">
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              কোনো যোগাযোগের তথ্য পাওয়া যায়নি।
+            </div>
+          {% endif %}
+        </div>
+        
+        <!-- Right Column: Contact Form -->
+        <div class="p-8 md:p-12 bg-gray-50">
+          <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+            <span class="inline-block text-blue-600"><i class="fas fa-paper-plane"></i></span> 
+            যোগাযোগ ফর্ম
+          </h2>
+          
+          <form id="contactForm" class="space-y-6">
+            <div>
+              <label class="block mb-2 font-semibold text-gray-700" for="name">
+                নাম <span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200" 
+                required
+                placeholder="আপনার নাম লিখুন"
+              >
+              <div class="text-sm text-red-500 mt-1" id="error-name"></div>
+            </div>
+            
+            <div>
+              <label class="block mb-2 font-semibold text-gray-700" for="phone">
+                ফোন নম্বর <span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="phone" 
+                name="phone" 
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200" 
+                required
+                placeholder="আপনার ফোন নম্বর লিখুন"
+              >
+              <div class="text-sm text-red-500 mt-1" id="error-phone"></div>
+            </div>
+            
+            <div>
+              <label class="block mb-2 font-semibold text-gray-700" for="title">
+                বার্তার শিরোনাম <span class="text-red-500">*</span>
+              </label>
+              <input 
+                type="text" 
+                id="title" 
+                name="title" 
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200" 
+                required
+                placeholder="বার্তার শিরোনাম লিখুন"
+              >
+              <div class="text-sm text-red-500 mt-1" id="error-title"></div>
+            </div>
+            
+            <div>
+              <label class="block mb-2 font-semibold text-gray-700" for="message">
+                বার্তার বিবরণ <span class="text-red-500">*</span>
+              </label>
+              <textarea 
+                id="message" 
+                name="message" 
+                rows="5" 
+                class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 resize-none" 
+                required
+                placeholder="আপনার বার্তা লিখুন..."
+              ></textarea>
+              <div class="text-sm text-red-500 mt-1" id="error-message"></div>
+            </div>
+            
+            <button 
+              type="submit" 
+              class="w-full py-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
+            >
+              <i class="fas fa-paper-plane"></i>
+              বার্তা পাঠান
+            </button>
+            
+            <div id="form-success" class="hidden text-green-600 text-center font-semibold p-4 bg-green-50 rounded-lg border border-green-200 animate-fade-in">
+              <i class="fas fa-check-circle mr-2"></i>
+            </div>
+            <div id="form-error" class="hidden text-red-600 text-center font-semibold p-4 bg-red-50 rounded-lg border border-red-200 animate-fade-in">
+              <i class="fas fa-exclamation-circle mr-2"></i>
+            </div>
+          </form>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Smooth fade-in animation
+if (window.CSS && CSS.supports('animation', 'name')) {
+  document.querySelectorAll('.animate-fade-in').forEach(el => {
+    el.style.opacity = 0;
+    setTimeout(() => {
+      el.style.transition = 'opacity 0.8s cubic-bezier(.4,0,.2,1)';
+      el.style.opacity = 1;
+    }, 100);
+  });
+}
+
+// AJAX form submission
+const form = document.getElementById('contactForm');
+form.addEventListener('submit', async function(e) {
+  e.preventDefault();
+  
+  // Reset errors
+  ['name','phone','title','message'].forEach(f => {
+    document.getElementById('error-' + f).textContent = '';
+  });
+  document.getElementById('form-success').classList.add('hidden');
+  document.getElementById('form-error').classList.add('hidden');
+
+  // Show loading state
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const originalText = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>পাঠানো হচ্ছে...';
+  submitBtn.disabled = true;
+
+  const data = {
+    name: form.name.value,
+    phone: form.phone.value,
+    title: form.title.value,
+    message: form.message.value
+  };
+  
+  try {
+    const response = await fetch("/contact/submit/", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    
+    if (result.success) {
+      form.reset();
+      document.getElementById('form-success').textContent = result.message;
+      document.getElementById('form-success').classList.remove('hidden');
+      form.classList.add('animate-fade-in');
+      setTimeout(() => form.classList.remove('animate-fade-in'), 1000);
+    } else {
+      if (result.errors) {
+        Object.entries(result.errors).forEach(([field, msg]) => {
+          document.getElementById('error-' + field).textContent = msg;
+        });
+      }
+      document.getElementById('form-error').textContent = result.message || 'বার্তা পাঠাতে সমস্যা হয়েছে!';
+      document.getElementById('form-error').classList.remove('hidden');
+    }
+  } catch (err) {
+    document.getElementById('form-error').textContent = 'সার্ভার সংযোগে সমস্যা হয়েছে!';
+    document.getElementById('form-error').classList.remove('hidden');
+  } finally {
+    // Reset button state
+    submitBtn.innerHTML = originalText;
+    submitBtn.disabled = false;
+  }
+});
+</script>
+
+<style>
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fade-in 0.8s cubic-bezier(.4,0,.2,1);
+}
+
+/* Custom scrollbar for mobile */
+@media (max-width: 1024px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Map responsive iframe styling */
+.aspect-w-16 iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
+{% endblock %} 

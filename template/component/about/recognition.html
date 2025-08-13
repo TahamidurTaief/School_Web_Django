@@ -1,0 +1,133 @@
+{% load static %}
+<section class="container mx-auto my-10 p-6 border border-gray-300 rounded-lg bg-white shadow-lg hover:shadow-2xl transition-shadow duration-500 group overflow-hidden">
+  <div class="flex flex-col items-center justify-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-center text-[var(--color-primary)] mb-2 tracking-wider">{% if recognition %}{{ recognition.title }}{% else %}স্বীকৃতি{% endif %}</h2>
+    <div class="h-1 w-16 bg-gradient-to-r from-[var(--color-primary)] to-purple-500 rounded-full transform transition-all duration-500 group-hover:w-40 group-hover:h-2 mb-8"></div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 w-full max-w-6xl mx-auto">
+      <!-- Left Side: Content -->
+      <div class="flex flex-col">
+        <h3 class="text-2xl font-semibold text-[var(--color-primary)] mb-4 flex items-center">
+          <i class="fas fa-info-circle text-blue-600 mr-3"></i>
+          স্বীকৃতির বিবরণ
+        </h3>
+        <div class="prose prose-lg text-gray-700 text-lg leading-relaxed">
+          <p class="text-justify">{% if recognition %}{{ recognition.content }}{% else %}স্বীকৃতির তথ্য পাওয়া যায়নি।{% endif %}</p>
+        </div>
+        
+        <!-- Awards Section -->
+        <div class="mt-6 bg-gradient-to-r from-yellow-50 to-orange-50 p-6 rounded-lg shadow-md border-l-4 border-yellow-500">
+          <div class="flex items-center mb-4">
+            <i class="fas fa-award text-3xl text-yellow-600 mr-3"></i>
+            <h4 class="text-xl font-bold text-gray-800">সেরা শিক্ষা প্রতিষ্ঠান</h4>
+          </div>
+          <p class="text-gray-700 mb-3">শিক্ষা মন্ত্রণালয় কর্তৃক প্রদত্ত</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium">এ+ গ্রেড</span>
+            <span class="bg-green-200 text-green-800 px-3 py-1 rounded-full text-sm font-medium">জাতীয় পুরস্কার</span>
+            <span class="bg-blue-200 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">আন্তর্জাতিক স্বীকৃতি</span>
+          </div>
+        </div>
+        
+        <!-- Additional Recognition Info -->
+        <div class="mt-6 bg-blue-50 p-4 rounded-lg">
+          <h4 class="text-lg font-semibold text-blue-800 mb-3 flex items-center">
+            <i class="fas fa-certificate text-blue-600 mr-2"></i>
+            অন্যান্য স্বীকৃতি
+          </h4>
+          <ul class="space-y-2 text-sm text-blue-700">
+            <li class="flex items-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              বাংলাদেশ শিক্ষা বোর্ড কর্তৃক স্বীকৃত
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              জাতীয় শিক্ষাক্রম অনুসরণকারী
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              সরকারি নিয়ম অনুযায়ী পরিচালিত
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <!-- Right Side: Document Image -->
+      <div class="flex flex-col">
+        <h3 class="text-2xl font-semibold text-[var(--color-primary)] mb-4 flex items-center">
+          <i class="fas fa-file-alt text-green-600 mr-3"></i>
+          স্বীকৃতি দলিল
+        </h3>
+        
+        {% if recognition.image %}
+          <div class="bg-white border-2 border-gray-300 rounded-lg p-4 hover:border-green-400 transition-colors duration-300">
+            <!-- A4 Ratio Image Container -->
+            <div class="relative w-full" style="aspect-ratio: 1/1.414;">
+              <img src="{{ recognition.image.url }}" 
+                   alt="স্বীকৃতি দলিল" 
+                   class="w-full h-full object-cover rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
+                   onclick="openRecognitionImageModal('{{ recognition.image.url }}', 'স্বীকৃতি দলিল')">
+            </div>
+            <div class="text-center mt-4">
+              <p class="text-gray-600 text-sm mb-2">স্বীকৃতি দলিল</p>
+              <button onclick="openRecognitionImageModal('{{ recognition.image.url }}', 'স্বীকৃতি দলিল')" 
+                      class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300">
+                <i class="fas fa-expand mr-2"></i>
+                বড় করে দেখুন
+              </button>
+            </div>
+          </div>
+        {% else %}
+          <div class="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center" style="aspect-ratio: 1/1.414;">
+            <div class="flex flex-col items-center justify-center h-full">
+              <i class="fas fa-file-upload text-4xl text-gray-400 mb-4"></i>
+              <h4 class="text-lg font-semibold text-gray-600 mb-2">কোন দলিল নেই</h4>
+              <p class="text-gray-500 text-sm">স্বীকৃতি দলিল এখনও আপলোড করা হয়নি</p>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Image Modal -->
+<div id="recognitionImageModal" class="fixed inset-0 bg-black bg-opacity-75 items-center justify-center z-50" style="display: none;">
+  <div class="relative max-w-4xl max-h-full p-4">
+    <button onclick="closeRecognitionImageModal()" class="absolute top-2 right-2 text-white text-2xl hover:text-gray-300 z-10">
+      <i class="fas fa-times"></i>
+    </button>
+    <img id="recognitionModalImage" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg">
+    <p id="recognitionModalTitle" class="text-white text-center mt-4 text-lg"></p>
+  </div>
+</div>
+
+<script>
+function openRecognitionImageModal(imageUrl, title) {
+  document.getElementById('recognitionModalImage').src = imageUrl;
+  document.getElementById('recognitionModalTitle').textContent = title;
+  const modal = document.getElementById('recognitionImageModal');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeRecognitionImageModal() {
+  const modal = document.getElementById('recognitionImageModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+}
+
+// Close modal when clicking outside the image
+document.getElementById('recognitionImageModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeRecognitionImageModal();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeRecognitionImageModal();
+  }
+});
+</script>

@@ -1,0 +1,111 @@
+{% load static %}
+<section class="container mx-auto my-10" 
+    x-data="{ 
+        activeClass: '{{ classes.0.id|default:"6" }}',
+        studentsList: {{ class_students|safe }},
+        showDetails: false,
+        selectedStudent: null,
+        get students() {
+            return this.studentsList[this.activeClass] || [];
+        }
+    }">
+    <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-[var(--color-primary)] mb-2">শ্রেণী অনুযায়ী তথ্য</h2>
+        <div class="h-1 w-24 mx-auto bg-gradient-to-r from-green-600 to-blue-600 rounded-full transform transition-all duration-500 hover:w-32"></div>
+        <p class="mt-4 text-gray-600">শ্রেণী নির্বাচন করুন</p>
+    </div>
+
+    <!-- Class Filter Buttons -->
+    <div class="flex flex-wrap justify-center gap-4 mb-8">
+        {% for class in classes %}
+        <button 
+            @click="activeClass = '{{ class.id }}'"
+            :class="{'bg-[var(--color-primary)] text-white': activeClass === '{{ class.id }}',
+                    'bg-white text-gray-700 hover:bg-gray-100': activeClass !== '{{ class.id }}'}"
+            class="px-6 py-3 rounded-lg shadow-md transition-all duration-300 transform hover:scale-105 font-semibold">
+            {{ class.name }}
+        </button>
+        {% endfor %}
+    </div>
+
+    <!-- Students Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <template x-for="student in students" :key="student.id">
+            <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 group"
+                 @click="selectedStudent = student; showDetails = true;">
+                <div class="relative overflow-hidden">
+                    <img :src="student.image || '{% static 'img/students/placeholder.jpg' %}'"
+                         :alt="student.name" 
+                         class="w-full h-48 object-cover transform transition-transform duration-700 group-hover:scale-110"
+                         @error="$el.src = '{% static 'img/students/placeholder.jpg' %}'">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                <div class="p-4">
+                    <h3 class="text-lg font-bold text-gray-800 mb-1" x-text="student.name"></h3>
+                    <div class="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                        <i class="fas fa-id-card"></i>
+                        <span x-text="'রোল: ' + student.roll"></span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                        <i class="fas fa-registered"></i>
+                        <span x-text="'রেজিস্ট্রেশন: ' + student.registration"></span>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-600">
+                        <i class="fas fa-user-graduate"></i>
+                        <span x-text="student.section"></span>
+                    </div>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Student Details Modal -->
+    <div x-show="showDetails" 
+         class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+         @click.self="showDetails = false">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4" x-show="selectedStudent">
+            <div class="flex justify-between items-start mb-4">
+                <h3 class="text-2xl font-bold text-gray-800" x-text="selectedStudent?.name"></h3>
+                <button @click="showDetails = false" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="space-y-3">
+                    <p class="flex items-center gap-2">
+                        <i class="fas fa-id-card text-[var(--color-primary)]"></i>
+                        <span class="font-semibold">রোল:</span>
+                        <span x-text="selectedStudent?.roll"></span>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fas fa-registered text-[var(--color-primary)]"></i>
+                        <span class="font-semibold">রেজিস্ট্রেশন:</span>
+                        <span x-text="selectedStudent?.registration"></span>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fas fa-user-graduate text-[var(--color-primary)]"></i>
+                        <span class="font-semibold">শ্রেণী:</span>
+                        <span x-text="selectedStudent?.section"></span>
+                    </p>
+                </div>
+                <div class="space-y-3">
+                    <p class="flex items-center gap-2">
+                        <i class="fas fa-user text-[var(--color-primary)]"></i>
+                        <span class="font-semibold">অভিভাবক:</span>
+                        <span x-text="selectedStudent?.guardian_name"></span>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fas fa-phone text-[var(--color-primary)]"></i>
+                        <span class="font-semibold">ফোন:</span>
+                        <span x-text="selectedStudent?.guardian_phone"></span>
+                    </p>
+                    <p class="flex items-center gap-2">
+                        <i class="fas fa-map-marker-alt text-[var(--color-primary)]"></i>
+                        <span class="font-semibold">ঠিকানা:</span>
+                        <span x-text="selectedStudent?.address"></span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

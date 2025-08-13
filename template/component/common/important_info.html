@@ -1,0 +1,70 @@
+<section class="container mx-auto max-w-7xl my-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  <!-- Notices -->
+  <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-lg p-5 flex flex-col h-full border border-blue-200 hover:shadow-2xl transition-all">
+    <h3 class="text-xl font-bold text-blue-700 mb-3 flex items-center gap-2"><i class="fas fa-bullhorn"></i> নোটিশ</h3>
+    <ul class="space-y-2 flex-1">
+      {% for notice in notices %}
+        <li class="flex items-center justify-between group hover:bg-blue-100 rounded px-2 py-1 transition-all">
+          <span class="truncate">{{ notice.title }}</span>
+          {% if notice.file %}
+            <a href="{{ notice.file.url }}" target="_blank" class="ml-2 text-blue-500 hover:text-blue-700 transition-colors" title="ডাউনলোড"><i class="fas fa-download"></i></a>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li class="text-gray-400">কোনো নোটিশ নেই</li>
+      {% endfor %}
+    </ul>
+    <a href="/notice/" class="mt-4 text-sm text-blue-700 hover:underline font-semibold flex items-center gap-1"><i class="fas fa-arrow-right"></i> সব নোটিশ</a>
+  </div>
+  <!-- Results -->
+  <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl shadow-lg p-5 flex flex-col h-full border border-green-200 hover:shadow-2xl transition-all">
+    <h3 class="text-xl font-bold text-green-700 mb-3 flex items-center gap-2"><i class="fas fa-file-alt"></i> রেজাল্ট</h3>
+    <ul class="space-y-2 flex-1">
+      {% for result in results %}
+        <li class="flex items-center justify-between group hover:bg-green-100 rounded px-2 py-1 transition-all">
+          <span class="truncate">{{ result.title }}</span>
+          {% if result.file %}
+            <a href="{{ result.file.url }}" target="_blank" class="ml-2 text-green-500 hover:text-green-700 transition-colors" title="ডাউনলোড"><i class="fas fa-download"></i></a>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li class="text-gray-400">কোনো রেজাল্ট নেই</li>
+      {% endfor %}
+    </ul>
+    <a href="/result/" class="mt-4 text-sm text-green-700 hover:underline font-semibold flex items-center gap-1"><i class="fas fa-arrow-right"></i> সব রেজাল্ট</a>
+  </div>
+  <!-- Admissions -->
+  <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-lg p-5 flex flex-col h-full border border-purple-200 hover:shadow-2xl transition-all">
+    <h3 class="text-xl font-bold text-purple-700 mb-3 flex items-center gap-2"><i class="fas fa-user-plus"></i> ভর্তি</h3>
+    <ul class="space-y-2 flex-1">
+      {% for admission in admissions %}
+        <li class="flex items-center justify-between group hover:bg-purple-100 rounded px-2 py-1 transition-all">
+          <span class="truncate">{{ admission.title }}</span>
+          {% if admission.file %}
+            <a href="{{ admission.file.url }}" target="_blank" class="ml-2 text-purple-500 hover:text-purple-700 transition-colors" title="ডাউনলোড"><i class="fas fa-download"></i></a>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li class="text-gray-400">কোনো ভর্তি তথ্য নেই</li>
+      {% endfor %}
+    </ul>
+    <a href="/admission/" class="mt-4 text-sm text-purple-700 hover:underline font-semibold flex items-center gap-1"><i class="fas fa-arrow-right"></i> সব ভর্তি</a>
+  </div>
+  <!-- Routines -->
+  <div class="bg-gradient-to-br from-pink-50 to-pink-100 rounded-xl shadow-lg p-5 flex flex-col h-full border border-pink-200 hover:shadow-2xl transition-all">
+    <h3 class="text-xl font-bold text-pink-700 mb-3 flex items-center gap-2"><i class="fas fa-calendar-alt"></i> রুটিন</h3>
+    <ul class="space-y-2 flex-1">
+      {% for routine in routines %}
+        <li class="flex items-center justify-between group hover:bg-pink-100 rounded px-2 py-1 transition-all">
+          <span class="truncate">{{ routine.title }}</span>
+          {% if routine.file %}
+            <a href="{{ routine.file.url }}" target="_blank" class="ml-2 text-pink-500 hover:text-pink-700 transition-colors" title="ডাউনলোড"><i class="fas fa-download"></i></a>
+          {% endif %}
+        </li>
+      {% empty %}
+        <li class="text-gray-400">কোনো রুটিন নেই</li>
+      {% endfor %}
+    </ul>
+    <a href="/routine/" class="mt-4 text-sm text-pink-700 hover:underline font-semibold flex items-center gap-1"><i class="fas fa-arrow-right"></i> সব রুটিন</a>
+  </div>
+</section> 

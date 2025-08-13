@@ -1,0 +1,88 @@
+{% load static %}
+
+{% comment %} 
+  A custom animation for the background shape behind the image.
+{% endcomment %}
+{% block extra_head %}
+<style>
+@keyframes rocking-box {
+  0%, 100% {
+    transform: rotate(-6deg) scale(1.0);
+  }
+  50% {
+    transform: rotate(3deg) scale(1.02);
+  }
+}
+.animate-rocking-box {
+  animation: rocking-box 12s ease-in-out infinite;
+}
+</style>
+{% endblock extra_head %}
+
+
+{% if message %}
+<section class="w-full container mx-auto max-w-7xl shadow-lg bg-white rounded-2xl py-16 sm:py-8 lg:py-10">
+  <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col items-center justify-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-center text-[var(--color-primary)] mb-2 tracking-wider">{{ message.title }}</h2>
+        <div class="h-1 w-16 bg-gradient-to-r from-[var(--color-primary)] to-purple-500 rounded-full transform transition-all duration-500 group-hover:w-40 group-hover:h-2 mb-8"></div>
+      </div>
+      
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-12 xl:gap-x-20 gap-y-12 items-center">
+
+      <div class="relative flex justify-center items-center min-w-[320px] min-h-[420px]">
+        <div class="absolute w-full h-full  max-w-[420px] max-h-[380px] rounded-3xl bg-cyan-100 animate-rocking-box"></div>
+        
+        {% if message.photo %}
+        <img class="relative object-cover rounded-2xl shadow-lg w-full max-w-[420px] min-w-[280px] h-auto aspect-[6/5] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:-rotate-1"
+             src="{{ message.photo.url }}" 
+             alt="{{ message.name }}">
+        {% else %}
+        <img class="relative object-cover rounded-2xl shadow-lg w-full max-w-[420px] min-w-[280px] h-auto aspect-[6/5] transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:-rotate-1"
+             src="{% static 'img/home/principal.jpg' %}" 
+             alt="{{ message.name }}">
+        {% endif %}
+      </div>
+
+      <div class="flex flex-col justify-center">
+        <div>
+          <h2 class="text-3xl lg:text-4xl font-bold text-gray-800">{{ message.name|default:"নাম পাওয়া যায়নি" }}</h2>
+          <p class="text-lg lg:text-xl font-medium text-cyan-600 mt-1">{{ message.position|default:"পদবী পাওয়া যায়নি" }}</p>
+        </div>
+
+        <hr class="my-6 border-gray-200">
+        
+        <div x-data="{
+                expanded: false,
+                message: `{{ message.message|escapejs }}`,
+                wordLimit: 40,
+                get shortText() {
+                  const words = this.message.split(/\s+/);
+                  if (words.length > this.wordLimit) {
+                    return words.slice(0, this.wordLimit).join(' ') + '...';
+                  }
+                  return this.message;
+                },
+                get needsExpansion() {
+                  return this.message.split(/\s+/).length > this.wordLimit;
+                }
+             }">
+          <p class="text-gray-600 text-lg leading-relaxed text-justify" x-text="expanded ? message : shortText"></p>
+          
+          <div class="mt-4" x-show="needsExpansion">
+              <button @click="expanded = !expanded" 
+                      class="inline-flex items-center gap-2 font-semibold text-cyan-600 hover:text-cyan-800 transition-colors duration-300 group">
+                <span x-text="expanded ? 'সংক্ষিপ্ত করুন' : 'বিস্তারিত পড়ুন'"></span>
+                <i class="fas fa-arrow-right transition-transform duration-300" 
+                   :class="{ 'group-hover:translate-x-1': !expanded, 'rotate-90': expanded }">
+                </i>
+              </button>
+          </div>
+        </div>
+        
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endif %}

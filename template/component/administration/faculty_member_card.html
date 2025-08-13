@@ -1,0 +1,64 @@
+{% load static %}
+<div class="faculty-card bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+    <!-- Faculty Photo -->
+    <div class="h-64 overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
+        {% if member.photo and member.photo.url %}
+            <img src="{{ member.photo.url }}" alt="{{ member.name }}" 
+                 class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        {% else %}
+            <div class="w-full h-full flex items-center justify-center">
+                <i class="fas fa-user-tie text-8xl text-white opacity-50"></i>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Faculty Info -->
+    <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ member.name }}</h3>
+        <p class="text-blue-600 font-semibold mb-3">{{ member.position }}</p>
+        
+        {% if member.specialization %}
+        <div class="flex items-center mb-2">
+            <i class="fas fa-star text-gray-500 mr-2"></i>
+            <span class="text-gray-600">{{ member.specialization }}</span>
+        </div>
+        {% endif %}
+        
+        {% if member.education %}
+        <div class="flex items-center mb-2">
+            <i class="fas fa-graduation-cap text-gray-500 mr-2"></i>
+            <span class="text-gray-600">{{ member.education }}</span>
+        </div>
+        {% endif %}
+        
+        {% if member.experience %}
+        <div class="flex items-center mb-3">
+            <i class="fas fa-clock text-gray-500 mr-2"></i>
+            <span class="text-gray-600">{{ member.experience }}</span>
+        </div>
+        {% endif %}
+        
+        <!-- Contact Info -->
+        {% if member.email or member.phone %}
+        <div class="border-t pt-3">
+            {% if member.email %}
+            <div class="flex items-center mb-2">
+                <i class="fas fa-envelope text-gray-500 mr-2"></i>
+                <a href="mailto:{{ member.email }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                    {{ member.email }}
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if member.phone %}
+            <div class="flex items-center">
+                <i class="fas fa-phone text-gray-500 mr-2"></i>
+                <a href="tel:{{ member.phone }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                    {{ member.phone }}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>

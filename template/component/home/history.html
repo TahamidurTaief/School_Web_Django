@@ -1,0 +1,79 @@
+{% load static %}
+<!-- History Section -->
+<section class="container mx-auto my-10 p-6 border border-gray-300 rounded-lg bg-white shadow-lg hover:shadow-2xl transition-shadow duration-500 group overflow-hidden">
+  <div class="flex flex-col md:flex-row items-stretch gap-8">
+    <!-- Left: Content (equal width) -->
+    <div class="flex-1 min-w-0 flex flex-col justify-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2 flex items-center">
+        {% if school_history %}
+          {{ school_history.title }}
+        {% else %}
+          আমাদের ইতিহাস
+        {% endif %}
+      </h2>
+      <div class="h-1 w-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transform transition-all duration-500 group-hover:w-40 group-hover:h-2 mb-4"></div>
+      <div x-data="{
+        expanded: false,
+        content: `{% if school_history %}{{ school_history.content|escape }}{% else %}বাংলাদেশের ইতিহাস অত্যন্ত গৌরবময় এবং বৈচিত্র্যময়। আমাদের দেশের জন্ম, সংগ্রাম, এবং উন্নয়নের কাহিনী প্রতিটি নাগরিকের হৃদয়ে গেঁথে আছে। ভাষা আন্দোলন, মুক্তিযুদ্ধ, এবং স্বাধীনতার ইতিহাস আমাদের জাতীয় পরিচয়ের অবিচ্ছেদ্য অংশ। শিক্ষা, সংস্কৃতি, এবং প্রযুক্তিতে আমাদের অগ্রগতি বিশ্ব দরবারে বাংলাদেশের অবস্থানকে সুদৃঢ় করেছে।{% endif %}`,
+        wordLimit: 50,
+        get shortText() {
+          const words = this.content.split(/\s+/);
+          return words.slice(0, this.wordLimit).join(' ') + (words.length > this.wordLimit ? '...' : '');
+        },
+        animating: false,
+        setHeight(el, toExpand) {
+          this.animating = true;
+          if (toExpand) {
+            el.style.height = el.scrollHeight + 'px';
+          } else {
+            el.style.height = el.scrollHeight + 'px';
+            requestAnimationFrame(() => {
+              el.style.height = '0px';
+            });
+          }
+        },
+        afterTransition(el) {
+          this.animating = false;
+          if (this.expanded) {
+            el.style.height = 'auto';
+          }
+        }
+      }" class="mt-2 text-gray-700 text-lg leading-relaxed relative">
+        <div class="overflow-hidden transition-all duration-500" x-ref="contentWrap"
+          :style="expanded ? 'height:auto' : 'height:0px'"
+          @transitionend="afterTransition($refs.contentWrap)">
+          <template x-if="expanded">
+            <div class="py-2">
+              <span x-text="content"></span>
+              <button @click="
+                expanded = false;
+                $nextTick(() => setHeight($refs.contentWrap, false));
+              " class="mt-4 ml-2 text-red-600 hover:underline font-semibold transition block">সংক্ষিপ্ত করুন</button>
+            </div>
+          </template>
+        </div>
+        <template x-if="!expanded">
+          <div>
+            <span x-text="shortText"></span>
+            <button @click="
+              expanded = true;
+              $nextTick(() => setHeight($refs.contentWrap, true));
+            " class="mt-4 ml-2 text-blue-600 hover:underline font-semibold transition">বিস্তারিত দেখুন</button>
+          </div>
+        </template>
+      </div>
+    </div>
+    <!-- Right: Responsive Image (equal width, fully covers) -->
+    <div class="flex-1 min-w-0 flex items-stretch">
+      <div class="relative w-full h-64 md:h-auto md:min-h-[350px] lg:min-h-[400px] flex-1">
+        {% if school_history and school_history.image %}
+        <img src="{{ school_history.image.url }}" alt="{{ school_history.title }}" class="absolute inset-0 w-full h-full object-cover rounded-xl shadow-xl border-4 border-blue-100" />
+        {% else %}
+        <img src="{% static 'img/home/institute.jpg' %}" alt="History" class="absolute inset-0 w-full h-full object-cover rounded-xl shadow-xl border-4 border-blue-100" />
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Alpine.js for interactivity -->
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script> 

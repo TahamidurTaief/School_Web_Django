@@ -1,0 +1,133 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}নোটিশসমূহ | SchoolProject{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-gray-50 to-white py-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-center text-[var(--color-primary)] mb-8">
+            নোটিশ বোর্ড
+        </h1>
+
+        <div x-data="{
+            activeTab: 'all',
+            activeNoticeType: null,
+            activeClass: null,
+            activeDept: null,
+            notices: [],
+            bannerBgColor: '',
+            colors: ['#FF5733', '#33FF57', '#3357FF', '#FF33FF', '#33FFFF', '#FFFF33', '#FF3357', '#57FF33', '#5733FF', '#33FFFF'],
+
+            generateRandomColor() {
+                this.bannerBgColor = this.colors[Math.floor(Math.random() * this.colors.length)];
+            },
+
+            async filterNotices() {
+                let url = '{% url "filter_notices" %}?';
+                
+                if (this.activeTab === 'type' && this.activeNoticeType) {
+                    url += 'type_slug=' + this.activeNoticeType;
+                } else if (this.activeTab === 'class' && this.activeClass) {
+                    url += 'class_id=' + this.activeClass;
+                } else if (this.activeTab === 'dept' && this.activeDept) {
+                    url += 'dept_slug=' + this.activeDept;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                this.notices = data.notices;
+            },
+            
+            init() {
+                this.generateRandomColor();
+                this.filterNotices();
+            }
+        }" x-init="init()">
+
+            <!-- Banner Section -->
+            <div class="w-full h-48 rounded-lg flex items-center justify-center mb-8 shadow-lg"
+                 :style="`background-color: ${bannerBgColor};`">
+                <h2 class="text-white text-3xl md:text-4xl font-bold text-center">
+                    সর্বশেষ নোটিশসমূহ
+                </h2>
+            </div>
+
+            <!-- Filter Selection -->
+            <div class="flex justify-center mb-8 flex-wrap gap-2">
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button @click="activeTab = 'all'; activeNoticeType = null; activeClass = null; activeDept = null; filterNotices();" 
+                            :class="activeTab === 'all' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-l-lg border border-gray-300 font-medium">
+                        <i class="fas fa-list-alt mr-2"></i> সকল নোটিশ
+                    </button>
+                    <button @click="activeTab = 'type'; activeClass = null; activeDept = null; filterNotices();" 
+                            :class="activeTab === 'type' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 border-t border-b border-gray-300 font-medium">
+                        <i class="fas fa-tags mr-2"></i> প্রকার অনুযায়ী
+                    </button>
+                    <button @click="activeTab = 'class'; activeNoticeType = null; activeDept = null; filterNotices();" 
+                            :class="activeTab === 'class' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 border-t border-b border-gray-300 font-medium">
+                        <i class="fas fa-graduation-cap mr-2"></i> শ্রেণি অনুযায়ী
+                    </button>
+                    <button @click="activeTab = 'dept'; activeNoticeType = null; activeClass = null; filterNotices();" 
+                            :class="activeTab === 'dept' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-r-lg border border-gray-300 font-medium">
+                        <i class="fas fa-building mr-2"></i> বিভাগ অনুযায়ী
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dynamic Filters -->
+            <div class="mb-8 text-center">
+                <div x-show="activeTab === 'type'" x-transition class="flex flex-wrap justify-center gap-3">
+                    <h3 class="text-xl font-semibold mb-3 w-full">নোটিশের প্রকার নির্বাচন করুন</h3>
+                    {% for type in notice_types %}
+                    <button @click="activeNoticeType = '{{ type.slug }}'; filterNotices();"
+                            :class="activeNoticeType === '{{ type.slug }}' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-4 py-1 rounded-full border border-gray-300 transition-colors duration-200">
+                        {{ type.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+
+                <div x-show="activeTab === 'class'" x-transition class="flex flex-wrap justify-center gap-3">
+                    <h3 class="text-xl font-semibold mb-3 w-full">শ্রেণি নির্বাচন করুন</h3>
+                    {% for class in classes %}
+                    <button @click="activeClass = {{ class.id }}; filterNotices();"
+                            :class="activeClass === {{ class.id }} ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-4 py-1 rounded-full border border-gray-300 transition-colors duration-200">
+                        {{ class.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+
+                <div x-show="activeTab === 'dept'" x-transition class="flex flex-wrap justify-center gap-3">
+                    <h3 class="text-xl font-semibold mb-3 w-full">বিভাগ নির্বাচন করুন</h3>
+                    {% for dept in departments %}
+                    <button @click="activeDept = '{{ dept.slug }}'; filterNotices();"
+                            :class="activeDept === '{{ dept.slug }}' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-4 py-1 rounded-full border border-gray-300 transition-colors duration-200">
+                        {{ dept.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Notice List Container -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="notice-list-container">
+                <template x-for="notice in notices" :key="notice.id">
+                    {% include 'component/notice_card.html' %}
+                </template>
+                <template x-if="notices.length === 0">
+                    <div class="col-span-full text-center py-10">
+                        <i class="fas fa-bell-slash text-6xl text-gray-400 mb-4"></i>
+                        <p class="text-xl text-gray-600">কোন নোটিশ পাওয়া যায়নি।</p>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

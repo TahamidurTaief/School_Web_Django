@@ -1,0 +1,56 @@
+{% load static %}
+
+{% if principal_message %}
+<section class="bg-gray-50 py-12 sm:py-16 lg:py-20">
+  <div class="container mx-auto w-full px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      
+      <div class="relative w-full h-96 lg:h-full">
+        <div class="absolute w-full inset-0 bg-gradient-to-r from-red-100 to-rose-100 rounded-2xl -rotate-3 transition-transform duration-500 hover:rotate-0 hover:scale-105"></div>
+        {% if principal_message.photo %}
+        <img class="relative w-full h-full object-cover rounded-2xl shadow-lg" src="{{ principal_message.photo.url }}" alt="{{ principal_message.name }}">
+        {% else %}
+        <img class="relative w-full h-full object-cover rounded-2xl shadow-lg" src="{% static 'img/home/principal.jpg' %}" alt="Principal">
+        {% endif %}
+      </div>
+
+      <div x-data="{
+        expanded: false,
+        message: `{{ principal_message.message|escapejs }}`,
+        wordLimit: 40,
+        get shortText() {
+          const words = this.message.split(/\s+/);
+          if (words.length > this.wordLimit) {
+            return words.slice(0, this.wordLimit).join(' ') + '...';
+          }
+          return this.message;
+        }
+      }">
+        <div class="flex items-center gap-3">
+            <div class="h-1.5 w-16 bg-[var(--color-primary)] rounded-full"></div>
+            <h3 class="text-xl font-bold text-gray-900">
+                {% if principal_message.role %}{{ principal_message.role.name }}{% else %}পরিচালকের বাণী{% endif %}
+            </h3>
+        </div>
+        
+        <p class="mt-6 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
+            {{ principal_message.name }}
+        </p>
+
+        <div class="mt-4 text-gray-600 text-lg leading-relaxed prose prose-lg">
+          <i class="fas fa-quote-left text-gray-300 text-3xl float-left mr-3"></i>
+          <p x-text="expanded ? message : shortText"></p>
+        </div>
+        
+        <div class="mt-6">
+            <button @click="expanded = !expanded" class="inline-flex items-center gap-2 text-base font-semibold text-[var(--color-primary)] hover:text-red-800 transition-colors">
+              <span x-text="expanded ? 'সংক্ষিপ্ত করুন' : 'বিস্তারিত দেখুন'"></span>
+              <i class="fas fa-arrow-right transition-transform" :class="{ 'rotate-90': expanded }"></i>
+            </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+{% endif %}

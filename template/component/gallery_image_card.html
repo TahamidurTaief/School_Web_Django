@@ -1,0 +1,8 @@
+<div class="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl cursor-pointer"
+     @click="openLightbox(image.image_url)">
+    <img :src="image.image_url" :alt="image.title" class="w-full h-48 aspect-square object-cover">
+    <div class="p-4">
+        <h3 class="text-md font-semibold text-gray-800" x-text="image.title"></h3>
+        <p class="text-gray-600 text-[12px]" x-text="image.description"></p>
+    </div>
+</div>

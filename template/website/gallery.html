@@ -1,0 +1,108 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}গ্যালারি | SchoolProject{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-gray-50 to-white py-8">
+    <div class="container max-w-7xl mx-auto px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-center text-[var(--color-primary)] mb-8">
+            আমাদের গ্যালারি
+        </h1>
+
+        <div x-data="{
+            activeTab: 'images',
+            images: [],
+            videos: [],
+            isLightboxOpen: false,
+            lightboxImageUrl: '',
+            
+            openLightbox(url) {
+                this.lightboxImageUrl = url;
+                this.isLightboxOpen = true;
+            },
+            
+            async filterGallery() {
+                if (this.activeTab === 'images') {
+                    const response = await fetch('{% url "filter_gallery_images" %}?');
+                    const data = await response.json();
+                    this.images = data.images;
+                } else if (this.activeTab === 'videos') {
+                    const response = await fetch('{% url "filter_gallery_videos" %}?');
+                    const data = await response.json();
+                    this.videos = data.videos;
+                }
+            },
+            
+            init() {
+                this.filterGallery();
+            }
+        }" x-init="init()">
+
+            <!-- Tab Selection -->
+            <div class="flex justify-center mb-8">
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button @click="activeTab = 'images'; filterGallery();" 
+                            :class="activeTab === 'images' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-l-lg border border-gray-300 font-medium">
+                        <i class="fas fa-image mr-2"></i> ছবি গ্যালারি
+                    </button>
+                    <button @click="activeTab = 'videos'; filterGallery();" 
+                            :class="activeTab === 'videos' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-r-lg border border-gray-300 font-medium">
+                        <i class="fas fa-video mr-2"></i> ভিডিও গ্যালারি
+                    </button>
+                </div>
+            </div>
+
+            <!-- Image Gallery -->
+            <div x-show="activeTab === 'images'" x-transition class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
+                <template x-for="image in images" :key="image.id">
+                    {% include 'component/gallery_image_card.html' %}
+                </template>
+                <template x-if="images.length === 0">
+                    <div class="col-span-full text-center py-10">
+                        <i class="fas fa-image text-6xl text-gray-400 mb-4"></i>
+                        <p class="text-xl text-gray-600">কোন ছবি পাওয়া যায়নি।</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Video Gallery -->
+            <div x-show="activeTab === 'videos'" x-transition class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5  gap-6">
+                <template x-for="video in videos" :key="video.id">
+                    {% include 'component/gallery_video_card.html' %}
+                </template>
+                <template x-if="videos.length === 0">
+                    <div class="col-span-full text-center py-10">
+                        <i class="fas fa-video text-6xl text-gray-400 mb-4"></i>
+                        <p class="text-xl text-gray-600">কোন ভিডিও পাওয়া যায়নি।</p>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Lightbox for Images -->
+            <div x-show="isLightboxOpen"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-black bg-opacity-75 z-50 flex items-center justify-center p-4"
+                 x-cloak
+                 @click.away="isLightboxOpen = false"
+                 @keydown.escape.window="isLightboxOpen = false">
+                <div class="relative max-w-3xl max-h-[90vh] mx-auto">
+                    <img :src="lightboxImageUrl" alt="Gallery Image" class="max-w-full max-h-full object-contain rounded-lg shadow-lg">
+                    <button @click="isLightboxOpen = false"
+                            class="absolute top-2 right-2 text-white text-3xl focus:outline-none">
+                        &times;
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

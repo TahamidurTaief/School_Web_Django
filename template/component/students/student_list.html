@@ -1,0 +1,125 @@
+{% load static %}
+<div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6" id="student-list">
+    {% for student in students %}
+    <div class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group"
+         x-data="{ 
+             showDetails: false,
+             init() {
+                 // Prevent modal from showing on page load
+                 this.showDetails = false;
+             }
+         }"
+         @click="showDetails = true">
+        <div class="relative h-full max-h-52 w-full  aspect-square overflow-hidden">
+            <img src="{{ student.image }}" 
+                 alt="{{ student.name }}"
+                 class="absolute h-full w-full aspect-square object-cover transition-transform duration-500 group-hover:scale-105"
+                 style="object-position: center top;"
+                 onerror="this.src='{% static 'img/administration/1.jpeg' %}'">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <h3 class="text-xl font-bold">{{ student.name }}</h3>
+                <p class="text-sm opacity-90">রোল: {{ student.roll }}</p>
+            </div>
+        </div>
+        <div class="p-4">
+            <div class="flex justify-between items-center">
+                <span class="text-sm text-gray-600">
+                    <i class="fas fa-graduation-cap mr-1"></i> {{ student.class_name }}
+                </span>
+                {% if student.department %}
+                <span class="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                    <i class="fas fa-building mr-1"></i> {{ student.department }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div x-show="showDetails" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+             x-cloak
+             @click.away="showDetails = false"
+             @keydown.escape.window="showDetails = false">
+            <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                 @click.stop>
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-800">{{ student.name }}</h3>
+                            <p class="text-blue-600">{{ student.class_name }}</p>
+                        </div>
+                        <button @click="showDetails = false" 
+                                class="text-gray-500 hover:text-gray-700 transition-colors duration-200">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">প্রাথমিক তথ্য</h4>
+                            <div class="space-y-3">
+                                <p class="flex items-center gap-2">
+                                    <i class="fas fa-id-card text-blue-500 w-5"></i>
+                                    <span class="font-medium">রোল নং:</span>
+                                    <span>{{ student.roll }}</span>
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <i class="fas fa-registered text-blue-500 w-5"></i>
+                                    <span class="font-medium">রেজিস্ট্রেশন:</span>
+                                    <span>{{ student.registration }}</span>
+                                </p>
+                                {% if student.department %}
+                                <p class="flex items-center gap-2">
+                                    <i class="fas fa-building text-blue-500 w-5"></i>
+                                    <span class="font-medium">বিভাগ:</span>
+                                    <span>{{ student.department }}</span>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">অভিভাবকের তথ্য</h4>
+                            <div class="space-y-3">
+                                <p class="flex items-center gap-2">
+                                    <i class="fas fa-user text-blue-500 w-5"></i>
+                                    <span class="font-medium">নাম:</span>
+                                    <span>{{ student.guardian_name }}</span>
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <i class="fas fa-phone text-blue-500 w-5"></i>
+                                    <span class="font-medium">ফোন:</span>
+                                    <span>{{ student.guardian_phone }}</span>
+                                </p>
+                                <p class="flex items-center gap-2">
+                                    <i class="fas fa-map-marker-alt text-blue-500 w-5"></i>
+                                    <span class="font-medium">ঠিকানা:</span>
+                                    <span>{{ student.address }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-span-full text-center py-10">
+        <div class="text-gray-500">
+            {% if initial_class_id == None %}
+                 <i class="fas fa-hand-pointer text-5xl mb-4"></i>
+                <p class="text-xl">অনুগ্রহ করে একটি শ্রেণী বা বিভাগ নির্বাচন করুন।</p>
+            {% else %}
+                <i class="fas fa-user-graduate text-5xl mb-4"></i>
+                <p class="text-xl">কোন শিক্ষার্থী পাওয়া যায়নি অথবা এই শ্রেণীর শিক্ষার্থীদের তথ্য পাবলিক করা হয়নি।</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,11 @@
+{% load static %}
+<section class="container mx-auto my-10 p-6 border border-gray-300 rounded-lg bg-white shadow-lg hover:shadow-2xl transition-shadow duration-500 group overflow-hidden">
+  <div class="flex flex-col items-center justify-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-center text-[var(--color-primary)] mb-2 tracking-wider">{{ about_content.title }}</h2>
+    <div class="h-1 w-16 bg-gradient-to-r from-[var(--color-primary)] to-purple-500 rounded-full transform transition-all duration-500 group-hover:w-40 group-hover:h-2 mb-8"></div>
+    
+    <div class="prose prose-lg max-w-4xl mx-auto text-gray-700 text-lg leading-relaxed">
+      <p class="text-justify">{{ about_content.content }}</p>
+    </div>
+  </div>
+</section>

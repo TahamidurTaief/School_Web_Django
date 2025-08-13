@@ -1,0 +1,356 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}Home | {{ school_info.name|default:"School Project" }}{% endblock %}
+
+{% block content %}
+
+    {# The component for your hero slider #}
+    {% if slider_images %}
+        {% include 'component/home/Hero.html' with images=slider_images %}
+    {% endif %}
+
+    {# The component for school history #}
+    {% if school_info.history %}
+        {% include 'component/home/history.html' with history=school_info.history %}
+    {% endif %}
+
+    {# The component for the principal's message #}
+    <!-- {% if principal_message %}
+        {% include 'component/home/principal_message.html' with principal_message=principal_message %}
+    {% endif %} -->
+
+    {# NEW: Loop through all featured AboutMessages for Home Page #}
+    {% if messages %}
+        {% for message in messages %}
+            {% include 'component/home/home_message.html' with message=message %}
+        {% endfor %}
+    {% endif %}
+
+    {# The component for important info tabs #}
+    {% if notices or results or admissions or routines %}
+        {% include 'component/home/important_info.html' with notices=notices results=results admissions=admissions routines=routines %}
+    {% endif %}
+
+
+    {# Recent Events Section - রিসেন্ট ইভেন্টস #}
+    {% if recent_events %}
+        <section class="py-8 bg-gray-50">
+            <div class="container max-w-7xl mx-auto px-4">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2 flex items-center">
+                    সাম্প্রতিক
+                </h2>
+                <div class="h-1 w-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transform transition-all duration-500 group-hover:w-40 group-hover:h-2 mb-4"></div>
+                <div class="grid gap-6 grid-cols-2 md:grid-cols-4 xl:grid-cols-4">
+                    {% for event in recent_events %}
+                        {% include 'component/home/home_event_card.html' with event=event %}
+                    {% endfor %}
+                </div>
+                <div class="text-center mt-8">
+                    <a href="{% url 'samprotik_khobor' %}" data-turbo-action="advance" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                        সব ইভেন্ট দেখুন
+                    </a>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    {# The component for brief information about the school (Corrected variable) #}
+    {% if brief_info %}
+        {% include 'component/about/brief_info.html' with brief_info=brief_info %}
+    {% endif %}
+
+    {# The component for the photo gallery #}
+    {% if gallery_images %}
+        {% include 'component/home/gallery.html' with gallery_images=gallery_images %}
+    {% endif %}
+
+    {# The component for important links (Preserved as commented out, per your file) #}
+    {# {% include 'component/common/important_links.html' with important_links=important_links %} #}
+
+    <div id="homeEventModal" class="fixed inset-0 z-50 hidden">
+        <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-60" style="backdrop-filter: blur(8px);" onclick="closeHomeEventModal()"></div>
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full modal-content">
+                <div class="flex items-center justify-between p-6 border-b">
+                    <div class="flex items-center">
+                        <span id="homeModalBadge" class="px-3 py-1 rounded-full text-sm font-medium mr-3"></span>
+                        <h2 id="homeModalTitle" class="text-2xl font-bold text-gray-900"></h2>
+                    </div>
+                    <button onclick="closeHomeEventModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="p-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div id="homeModalPrimaryImage" class=""></div>
+                            
+                            <div id="homeModalGallery" class="hidden">
+                                <h3 class="text-lg font-semibold mb-3 text-gray-900">
+                                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    আরও ছবি
+                                </h3>
+                                <div class="image-slider relative">
+                                    <div id="homeModalSlidercontainer max-w-7xl" class="slider-container max-w-7xl"></div>
+                                    <div id="homeModalSliderControls" class="slider-controls"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <h3 class="text-lg font-semibold mb-3 text-gray-900">
+                                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    বিস্তারিত বিবরণ
+                                </h3>
+                                <div id="homeModalDescription" class="text-gray-700 leading-relaxed"></div>
+                            </div>
+                            
+                            <div class="flex flex-col space-y-2 text-sm text-gray-500 border-t pt-4">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    <span id="homeModalDate"></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span id="homeModalTime"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block head %}
+<style>
+.modal-backdrop {
+    backdrop-filter: blur(8px);
+}
+
+.modal-content {
+    animation: modalSlideIn 0.3s ease-out;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.image-slider {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.slider-container max-w-7xl {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.slider-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+.slider-image.active {
+    opacity: 1;
+}
+
+.slider-controls {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+
+.slider-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.slider-dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+</style>
+
+<script>
+// Home Event Modal Functions
+async function openHomeEventModal(eventId) {
+    try {
+        const response = await fetch(`/event-news-detail/${eventId}/`);
+        const result = await response.json();
+        
+        if (result.success) {
+            const data = result.data;
+            
+            // Update modal content
+            document.getElementById('homeModalTitle').textContent = data.title;
+            
+            // Set badge based on type
+            const badge = document.getElementById('homeModalBadge');
+            if (data.type === 'EVENT') {
+                badge.className = 'bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium mr-3';
+                badge.innerHTML = '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>ইভেন্ট';
+            } else {
+                badge.className = 'bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium mr-3';
+                badge.innerHTML = '<svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path></svg>সংবাদ';
+            }
+            
+            // Primary image
+            const primaryImageDiv = document.getElementById('homeModalPrimaryImage');
+            if (data.primary_image) {
+                primaryImageDiv.innerHTML = 
+                    `<img src="${data.primary_image}" alt="${data.title}" class="w-full h-64 object-cover rounded-lg shadow-lg">`;
+            } else {
+                primaryImageDiv.innerHTML = `
+                    <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                        <div class="text-center text-gray-500">
+                            <svg class="w-12 h-12 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <p class="text-sm">ছবি নেই</p>
+                        </div>
+                    </div>`;
+            }
+            
+            // Gallery
+            const gallery = document.getElementById('homeModalGallery');
+            if (data.gallery_images && data.gallery_images.length > 0) {
+                gallery.classList.remove('hidden');
+                
+                const slidercontainer max-w-7xl = document.getElementById('homeModalSlidercontainer max-w-7xl');
+                const sliderControls = document.getElementById('homeModalSliderControls');
+                
+                // Build gallery slider
+                slidercontainer max-w-7xl.innerHTML = data.gallery_images.map((img, index) => 
+                    `<img src="${img.url}" alt="${img.title || data.title}" class="slider-image ${index === 0 ? 'active' : ''}">`
+                ).join('');
+                
+                sliderControls.innerHTML = data.gallery_images.map((_, index) => 
+                    `<span class="slider-dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></span>`
+                ).join('');
+                
+                // Initialize modal slider
+                initializeHomeModalSlider();
+            } else {
+                gallery.classList.add('hidden');
+            }
+            
+            // Description
+            document.getElementById('homeModalDescription').innerHTML = data.description.replace(/\n/g, '<br>');
+            
+            // Date and time
+            document.getElementById('homeModalDate').textContent = data.created_at;
+            document.getElementById('homeModalTime').textContent = data.created_at_time;
+            
+            // Show modal
+            document.getElementById('homeEventModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            
+        } else {
+            alert('বিস্তারিত তথ্য লোড করতে সমস্যা হয়েছে।');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('বিস্তারিত তথ্য লোড করতে সমস্যা হয়েছে।');
+    }
+}
+
+function closeHomeEventModal() {
+    document.getElementById('homeEventModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+function initializeHomeModalSlider() {
+    const container max-w-7xl = document.getElementById('homeModalSlidercontainer max-w-7xl');
+    const controls = document.getElementById('homeModalSliderControls');
+    const dots = controls.querySelectorAll('.slider-dot');
+    const images = container max-w-7xl.querySelectorAll('.slider-image');
+    let currentSlide = 0;
+
+    // Auto play functionality
+    let autoplayInterval = setInterval(() => {
+        currentSlide = (currentSlide + 1) % images.length;
+        showSlide(currentSlide);
+    }, 4000);
+
+    function showSlide(index) {
+        images.forEach(img => img.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+        
+        images[index].classList.add('active');
+        dots[index].classList.add('active');
+    }
+
+    // Dot click handlers
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            clearInterval(autoplayInterval);
+            currentSlide = index;
+            showSlide(currentSlide);
+            
+            // Restart autoplay
+            autoplayInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % images.length;
+                showSlide(currentSlide);
+            }, 4000);
+        });
+    });
+}
+
+// Close modal when clicking outside
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-backdrop')) {
+        closeHomeEventModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeHomeEventModal();
+    }
+});
+</script>
+
+{% endblock %}

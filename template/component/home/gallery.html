@@ -1,0 +1,95 @@
+<section class="container mx-auto my-10 p-6">
+  <h2 class="text-3xl font-bold text-center mb-8">গ্যালারি</h2>
+  <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 lg:grid-rows-2">
+    {% for img in gallery_images %}
+      <div class="overflow-hidden rounded-lg shadow-lg group flex justify-center items-center cursor-pointer" 
+           onclick="openGalleryModal('{{ img.image.url }}', '{{ img.title|default:"Gallery Image" }}')">
+        <img src="{{ img.image.url }}" alt="Gallery Image" class="h-40 md:h-48 lg:h-56 w-auto object-cover transition-transform duration-300 group-hover:scale-105" />
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Gallery Modal -->
+<div id="galleryModal" class="fixed inset-0 z-50 hidden">
+    <div class="gallery-modal-backdrop fixed inset-0 bg-black bg-opacity-90" onclick="closeGalleryModal()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <!-- Close Button -->
+        <button onclick="closeGalleryModal()" 
+                class="absolute top-4 right-4 z-60 text-white hover:text-gray-300 transition-colors">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        
+        <!-- Image Container -->
+        <div class="gallery-modal-content max-w-full max-h-full">
+            <img id="galleryModalImage" 
+                 src="" 
+                 alt="Gallery Image" 
+                 class="max-w-full max-h-screen w-auto h-auto object-contain">
+        </div>
+    </div>
+</div>
+
+<style>
+.gallery-modal-backdrop {
+    backdrop-filter: blur(4px);
+}
+
+.gallery-modal-content {
+    animation: galleryModalZoomIn 0.3s ease-out;
+}
+
+@keyframes galleryModalZoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+#galleryModal img {
+    max-width: 95vw;
+    max-height: 95vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+</style>
+
+<script>
+function openGalleryModal(imageUrl, altText) {
+    const modal = document.getElementById('galleryModal');
+    const modalImage = document.getElementById('galleryModalImage');
+    
+    modalImage.src = imageUrl;
+    modalImage.alt = altText;
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGalleryModal() {
+    const modal = document.getElementById('galleryModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeGalleryModal();
+    }
+});
+
+// Close modal when clicking outside the image
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('gallery-modal-backdrop')) {
+        closeGalleryModal();
+    }
+});
+</script> 

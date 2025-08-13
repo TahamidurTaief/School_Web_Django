@@ -1,0 +1,28 @@
+{% load static %}
+<section class="container mx-auto my-10">
+  <h2 class="text-3xl md:text-4xl font-bold text-center text-red-700 mb-8">অধ্যক্ষ/প্রধানের বাণী</h2>
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for msg in principal_messages %}
+    <div class="bg-white rounded-xl shadow-lg hover:shadow-2xl border border-gray-200 p-6 flex flex-col group transition-all duration-300">
+      <div class="flex items-center gap-4 mb-4">
+        {% if msg.photo %}
+          <img src="{{ msg.photo.url }}" alt="{{ msg.name }}" class="w-20 h-20 object-cover rounded-full border-4 border-red-200 shadow-md" />
+        {% else %}
+          <img src="{% static 'img/home/principal.jpg' %}" alt="{{ msg.name }}" class="w-20 h-20 object-cover rounded-full border-4 border-red-200 shadow-md" />
+        {% endif %}
+        <div>
+          <div class="text-lg font-bold text-red-700">{{ msg.name }}</div>
+          <div class="text-sm text-gray-600">{{ msg.role.name }}</div>
+        </div>
+      </div>
+      <div x-data="{ expanded: false }">
+        <div class="text-gray-700 text-base leading-relaxed mb-2 line-clamp-4" x-show="!expanded">{{ msg.message|truncatewords:40 }}</div>
+        <div class="text-gray-700 text-base leading-relaxed mb-2 whitespace-pre-line" x-show="expanded" x-transition>{{ msg.message }}</div>
+        <button @click="expanded = !expanded" class="mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 transition-colors duration-200 text-sm">
+          <span x-text="expanded ? 'সংক্ষিপ্ত করুন' : 'বিস্তারিত দেখুন'"></span>
+        </button>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>

@@ -1,0 +1,298 @@
+{% load static %}
+<section class="container mx-auto my-10 p-6 border border-gray-300 rounded-lg bg-white shadow-lg hover:shadow-2xl transition-shadow duration-500 group overflow-hidden">
+  <div class="flex flex-col items-center justify-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-center text-[var(--color-primary)] mb-2 tracking-wider">{{ news_links.title }}</h2>
+    <div class="h-1 w-16 bg-gradient-to-r from-[var(--color-primary)] to-purple-500 rounded-full transform transition-all duration-500 group-hover:w-40 group-hover:h-2 mb-8"></div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mx-auto">
+      <!-- News Section -->
+      <div>
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+          <i class="fas fa-newspaper text-blue-600 mr-2"></i> সাম্প্রতিক সংবাদ
+        </h3>
+        <div class="space-y-4">          
+          {% for news_item in news_links.news %}
+          <div class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 border-l-4 border-blue-500">
+            <h4 class="text-lg font-semibold text-gray-800 mb-1">{{ news_item.title }}</h4>
+            <div class="flex items-center text-gray-600 text-sm mb-2">
+              <i class="far fa-calendar-alt mr-2"></i>
+              <span>{{ news_item.date }}</span>
+            </div>
+            <button onclick="openNewsModal({{ news_item.id }})" class="text-blue-600 hover:text-blue-800 transition-colors duration-300 flex items-center cursor-pointer">
+              <span>বিস্তারিত দেখুন</span>
+              <i class="fas fa-arrow-right ml-1 text-xs"></i>
+            </button>
+          </div>
+          {% empty %}
+          <div class="text-center py-8">
+            <i class="fas fa-newspaper text-4xl text-gray-400 mb-4"></i>
+            <p class="text-gray-500">কোনো সংবাদ পাওয়া যায়নি</p>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      
+      <!-- Links Section -->
+      <div>
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4 flex items-center">
+          <i class="fas fa-link text-purple-600 mr-2"></i> প্রয়োজনীয় লিংক
+        </h3>
+        <div class="space-y-3">
+          {% for link in news_links.links %}
+          <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer" class="flex items-center p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-200 hover:border-purple-300">
+            <i class="fas fa-external-link-alt text-purple-600 mr-3"></i>
+            <span class="text-gray-800 hover:text-purple-700 transition-colors duration-300">{{ link.title }}</span>
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Modal for News Details (Similar to samprotik-khobor modal) -->
+<div id="newsDetailModal" class="fixed inset-0 z-50 hidden">
+                <div class="modal-backdrop fixed inset-0 bg-black bg-opacity-60" style="backdrop-filter: blur(8px);" onclick="window.closeNewsModal()"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-90vh overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-6 border-b">
+                <div class="flex items-center">
+                    <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium mr-3">
+                        <i class="fas fa-newspaper mr-1"></i>সংবাদ
+                    </span>
+                    <h2 id="newsModalTitle" class="text-2xl font-bold text-gray-900"></h2>
+                </div>
+                <button onclick="window.closeNewsModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Modal Content -->
+            <div class="p-6">
+                <!-- Primary Image -->
+                <div id="newsModalPrimaryImage" class="mb-6"></div>
+                
+                <!-- Gallery Slider -->
+                <div id="newsModalGallery" class="mb-6 hidden">
+                    <h3 class="text-lg font-semibold mb-4 text-gray-900">
+                        <i class="fas fa-images mr-2"></i>
+                        আরও ছবি
+                    </h3>
+                    <div class="image-slider relative">
+                        <div id="newsModalSliderContainer" class="slider-container flex transition-transform duration-500"></div>
+                        <div id="newsModalSliderControls" class="slider-controls"></div>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-3 text-gray-900">
+                        <i class="fas fa-align-left mr-2"></i>
+                        বিস্তারিত বিবরণ
+                    </h3>
+                    <div id="newsModalDescription" class="text-gray-700 leading-relaxed"></div>
+                </div>
+                
+                <!-- Metadata -->
+                <div class="flex items-center justify-between text-sm text-gray-500 border-t pt-4">
+                    <div>
+                        <i class="fas fa-calendar mr-1"></i>
+                        <span id="newsModalDate"></span>
+                    </div>
+                    <div>
+                        <i class="fas fa-clock mr-1"></i>
+                        <span id="newsModalTime"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Modal specific styles */
+.modal-backdrop {
+    backdrop-filter: blur(8px);
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.max-h-90vh {
+    max-height: 90vh;
+}
+
+.image-slider {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+.slider-container {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slider-image {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.slider-controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 6px;
+}
+
+.slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.slider-dot.active {
+    background: white;
+    transform: scale(1.2);
+}
+</style>
+
+<script>
+// Store news data for modal
+const newsData = {
+    {% for news_item in news_links.news %}
+    {{ news_item.id }}: {
+        id: {{ news_item.id }},
+        title: "{{ news_item.title|escapejs }}",
+        description: "{{ news_item.description|escapejs }}",
+        date: "{{ news_item.date }}",
+        time: "{{ news_item.time }}",
+        primary_image: "{{ news_item.primary_image }}",
+        gallery_images: [
+            {% for img in news_item.gallery_images %}
+            {
+                url: "{{ img.url }}",
+                title: "{{ img.title|escapejs }}",
+                description: "{{ img.description|escapejs }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ]
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+};
+
+console.log('News data loaded:', newsData);
+console.log('Object keys:', Object.keys(newsData));
+
+window.openNewsModal = function(newsId) {
+    console.log('Opening modal for news ID:', newsId);
+    console.log('Available newsData:', newsData);
+    
+    const data = newsData[newsId];
+    if (!data) {
+        console.error('No data found for news ID:', newsId);
+        alert('সংবাদের বিস্তারিত তথ্য পাওয়া যায়নি।');
+        return;
+    }
+    // Update modal content
+    document.getElementById('newsModalTitle').textContent = data.title;
+    
+    // Primary image
+    const primaryImageDiv = document.getElementById('newsModalPrimaryImage');
+    if (data.primary_image) {
+        primaryImageDiv.innerHTML = 
+            `<img src="${data.primary_image}" alt="${data.title}" class="w-full h-64 object-cover rounded-lg">`;
+    } else {
+        // Show placeholder for news
+        primaryImageDiv.innerHTML = `
+            <div class="w-full h-64 bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center rounded-lg">
+                <div class="text-center">
+                    <i class="fas fa-newspaper text-6xl text-green-400 mb-3"></i>
+                    <p class="text-green-600 font-medium text-lg">সংবাদ</p>
+                </div>
+            </div>`;
+    }
+    
+    // Gallery
+    const gallery = document.getElementById('newsModalGallery');
+    if (data.gallery_images && data.gallery_images.length > 0) {
+        gallery.classList.remove('hidden');
+        
+        const sliderContainer = document.getElementById('newsModalSliderContainer');
+        const sliderControls = document.getElementById('newsModalSliderControls');
+        
+        // Build gallery slider
+        sliderContainer.innerHTML = data.gallery_images.map(img => 
+            `<img src="${img.url}" alt="${img.title || data.title}" class="slider-image">`
+        ).join('');
+        
+        sliderControls.innerHTML = data.gallery_images.map((_, index) => 
+            `<span class="slider-dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></span>`
+        ).join('');
+        
+        // Initialize modal slider
+        window.initializeNewsModalSlider();
+    } else {
+        gallery.classList.add('hidden');
+    }
+    
+    // Description
+    document.getElementById('newsModalDescription').innerHTML = data.description.replace(/\n/g, '<br>');
+    
+    // Date and time
+    document.getElementById('newsModalDate').textContent = data.date;
+    document.getElementById('newsModalTime').textContent = data.time;
+    
+    // Show modal
+    document.getElementById('newsDetailModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+window.initializeNewsModalSlider = function() {
+    const container = document.getElementById('newsModalSliderContainer');
+    const controls = document.getElementById('newsModalSliderControls');
+    const dots = controls.querySelectorAll('.slider-dot');
+    
+    if (dots.length <= 1) return;
+    
+    let currentSlide = 0;
+    
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            currentSlide = index;
+            window.updateNewsSlider(container, dots, currentSlide);
+        });
+    });
+    
+    // Auto-slide for modal
+    setInterval(() => {
+        currentSlide = (currentSlide + 1) % dots.length;
+        window.updateNewsSlider(container, dots, currentSlide);
+    }, 3000);
+}
+
+window.updateNewsSlider = function(container, dots, index) {
+    container.style.transform = `translateX(-${index * 100}%)`;
+    
+    dots.forEach(dot => dot.classList.remove('active'));
+    dots[index].classList.add('active');
+}
+
+window.closeNewsModal = function() {
+    document.getElementById('newsDetailModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Close modal on escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        window.closeNewsModal();
+    }
+});
+</script>

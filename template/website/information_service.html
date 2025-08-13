@@ -1,0 +1,257 @@
+{% extends 'website/base.html' %}
+
+{% block title %}তথ্য সেবা কেন্দ্র | SchoolProject{% endblock %}
+
+{% block content %}
+<!-- Hero Section with Sliding Gallery -->
+<section class="relative h-96 overflow-hidden bg-gradient-to-r from-blue-900 to-blue-700">
+    <!-- Sliding Gallery -->
+    <div class="relative h-full" x-data="{ currentSlide: 0, slides: {{ slider_images|length|default:1 }}, autoPlay: true }" 
+         x-init="setInterval(() => { if (autoPlay && slides > 1) currentSlide = (currentSlide + 1) % slides }, 5000)">
+        
+        <!-- Slides -->
+        {% for slider in slider_images %}
+        <div class="absolute inset-0 transition-opacity duration-1000 ease-in-out"
+             :class="{ 'opacity-100': currentSlide === {{ forloop.counter0 }}, 'opacity-0': currentSlide !== {{ forloop.counter0 }} }">
+            {% if slider.image %}
+                <img src="{{ slider.image.url }}" alt="{{ slider.title }}" 
+                     class="w-full h-full object-cover">
+            {% else %}
+                <div class="w-full h-full bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
+                    <div class="text-center text-white">
+                        <i class="fas fa-image text-6xl mb-4 opacity-50"></i>
+                        <h3 class="text-2xl font-bold">{{ slider.title }}</h3>
+                        <p class="text-lg opacity-75">{{ slider.description }}</p>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+        </div>
+        {% endfor %}
+        
+        <!-- Slide Navigation -->
+        {% if slider_images|length > 1 %}
+        <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+            <template x-for="i in slides" :key="i">
+                <button @click="currentSlide = i - 1; autoPlay = false" 
+                        class="w-3 h-3 rounded-full transition-all duration-300"
+                        :class="currentSlide === i - 1 ? 'bg-white' : 'bg-white bg-opacity-50'"></button>
+            </template>
+        </div>
+        {% endif %}
+        
+        <!-- Content Overlay -->
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="text-center text-white z-10">
+                <h1 class="text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
+                    তথ্য সেবা কেন্দ্র
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 animate-fade-in-up-delay">
+                    আমাদের প্রতিষ্ঠানের সকল তথ্য একসাথে
+                </p>
+                <div class="flex justify-center space-x-4">
+                    <button class="bg-white text-blue-900 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 transform hover:scale-105">
+                        আরও জানুন
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Information Service Content -->
+{% if info_service %}
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto max-w-7xl px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">{{ info_service.title }}</h2>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">{{ info_service.description }}</p>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Facilities Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto max-w-7xl px-4">
+        <!-- Section Header -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">প্রতিষ্ঠানের সুবিধাসমূহ</h2>
+            <p class="text-lg text-gray-600">আমাদের প্রতিষ্ঠানের আধুনিক সুযোগ-সুবিধা সম্পর্কে জানুন</p>
+        </div>
+
+        <!-- Filter Buttons -->
+        {% if facility_groups %}
+        <div class="flex flex-wrap justify-center gap-4 mb-12" x-data="{ activeFilter: 'all' }">
+            <button @click="activeFilter = 'all'; filterFacilities('all')" 
+                    class="px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105"
+                    :class="activeFilter === 'all' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
+                সবকিছু
+            </button>
+            {% for facility_type, facilities in facility_groups.items %}
+            <button @click="activeFilter = '{{ facility_type }}'; filterFacilities('{{ facility_type }}')" 
+                    class="px-6 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105"
+                    :class="activeFilter === '{{ facility_type }}' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'">
+                {{ facilities.0.get_facility_type_display }}
+            </button>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Facilities Grid -->
+        <div id="facilities-container max-w-7xl mx-auto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for facility_type, facilities in facility_groups.items %}
+                {% for facility in facilities %}
+                    {% include 'component/information_service/facility_card.html' with facility=facility %}
+                {% endfor %}
+            {% endfor %}
+            {% if not facility_groups %}
+            <div class="col-span-full text-center py-12">
+                <div class="bg-gray-100 rounded-2xl p-8">
+                    <i class="fas fa-info-circle text-6xl text-gray-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-600 mb-2">কোন তথ্য পাওয়া যায়নি</h3>
+                    <p class="text-gray-500">দয়া করে পরে আবার চেষ্টা করুন</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="py-16 bg-gradient-to-r from-blue-900 to-purple-900 text-white">
+    <div class="container mx-auto max-w-7xl px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold mb-4">সংখ্যায় আমাদের প্রতিষ্ঠান</h2>
+            <p class="text-xl opacity-90">গত কয়েক বছরে আমাদের অর্জন</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {% for facility_type, facilities in facility_groups.items %}
+                {% if facilities %}
+                <div class="text-center" x-data="{ count: 0, target: {{ facilities.0.count }}, duration: 2000 }" 
+                     x-init="setTimeout(() => { const increment = target / (duration / 16); const timer = setInterval(() => { count += increment; if (count >= target) { count = target; clearInterval(timer); } }, 16); }, 500)">
+                    <div class="text-4xl md:text-5xl font-bold mb-2" x-text="Math.floor(count)">0</div>
+                    <div class="text-lg opacity-90">{{ facilities.0.unit }}</div>
+                    <div class="text-sm opacity-75">{{ facilities.0.get_facility_type_display }}</div>
+                </div>
+                {% endif %}
+            {% endfor %}
+            {% if not facility_groups %}
+            <div class="col-span-full text-center">
+                <p class="text-xl opacity-75">কোন তথ্য পাওয়া যায়নি</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Faculty Section -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto max-w-7xl px-4">
+        <!-- Section Header -->
+        <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4">আমাদের শিক্ষকবৃন্দ</h2>
+            <p class="text-lg text-gray-600">আমাদের অভিজ্ঞ এবং দক্ষ শিক্ষকমণ্ডলী</p>
+        </div>
+
+        <!-- Faculty Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {% for faculty in faculty_members %}
+                {% include 'component/information_service/faculty_card.html' with faculty=faculty %}
+            {% endfor %}
+            {% if not faculty_members %}
+            <div class="col-span-full text-center py-12">
+                <div class="bg-white rounded-2xl p-8 shadow-lg">
+                    <i class="fas fa-users text-6xl text-gray-400 mb-4"></i>
+                    <h3 class="text-2xl font-bold text-gray-600 mb-2">কোন শিক্ষক তথ্য পাওয়া যায়নি</h3>
+                    <p class="text-gray-500">দয়া করে পরে আবার চেষ্টা করুন</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto max-w-7xl px-4 text-center">
+        <h2 class="text-3xl font-bold text-gray-800 mb-4">আরও তথ্য জানতে চান?</h2>
+        <p class="text-lg text-gray-600 mb-8">আমাদের সাথে যোগাযোগ করুন</p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <a href="tel:+8801234567890" class="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-blue-700 transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-phone mr-2"></i>কল করুন
+            </a>
+            <a href="mailto:info@schoolproject.edu.bd" class="bg-green-600 text-white px-8 py-3 rounded-full font-semibold hover:bg-green-700 transition-all duration-300 transform hover:scale-105">
+                <i class="fas fa-envelope mr-2"></i>ইমেইল করুন
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Custom CSS for animations -->
+<style>
+    @keyframes fade-in-up {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-fade-in-up {
+        animation: fade-in-up 1s ease-out;
+    }
+    
+    .animate-fade-in-up-delay {
+        animation: fade-in-up 1s ease-out 0.3s both;
+    }
+    
+    .facility-card {
+        opacity: 1;
+        transform: translateY(0);
+        transition: all 0.5s ease;
+    }
+    
+    .facility-card.hidden {
+        opacity: 0;
+        transform: translateY(20px);
+        pointer-events: none;
+    }
+</style>
+
+<!-- JavaScript for filtering -->
+<script>
+function filterFacilities(type) {
+    const cards = document.querySelectorAll('.facility-card');
+    
+    cards.forEach(card => {
+        if (type === 'all' || card.dataset.type === type) {
+            card.classList.remove('hidden');
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+}
+
+// Add smooth scroll behavior
+document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

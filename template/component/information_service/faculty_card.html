@@ -1,0 +1,61 @@
+<div class="faculty-card bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-2xl">
+    <!-- Faculty Photo -->
+    <div class="h-64 overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
+        {% if faculty.photo and faculty.photo.url %}
+            <img src="{{ faculty.photo.url }}" alt="{{ faculty.name }}" 
+                 class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+        {% else %}
+            <div class="w-full h-full flex items-center justify-center">
+                <i class="fas fa-user-tie text-8xl text-white opacity-50"></i>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Faculty Info -->
+    <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-2">{{ faculty.name }}</h3>
+        <p class="text-blue-600 font-semibold mb-3">{{ faculty.position }}</p>
+        
+        {% if faculty.department %}
+        <div class="flex items-center mb-2">
+            <i class="fas fa-building text-gray-500 mr-2"></i>
+            <span class="text-gray-600">{{ faculty.department }}</span>
+        </div>
+        {% endif %}
+        
+        {% if faculty.education %}
+        <div class="flex items-center mb-2">
+            <i class="fas fa-graduation-cap text-gray-500 mr-2"></i>
+            <span class="text-gray-600">{{ faculty.education }}</span>
+        </div>
+        {% endif %}
+        
+        {% if faculty.experience %}
+        <div class="flex items-center mb-3">
+            <i class="fas fa-clock text-gray-500 mr-2"></i>
+            <span class="text-gray-600">{{ faculty.experience }} বছর অভিজ্ঞতা</span>
+        </div>
+        {% endif %}
+        
+        <!-- Contact Info -->
+        <div class="border-t pt-3">
+            {% if faculty.email %}
+            <div class="flex items-center mb-2">
+                <i class="fas fa-envelope text-gray-500 mr-2"></i>
+                <a href="mailto:{{ faculty.email }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                    {{ faculty.email }}
+                </a>
+            </div>
+            {% endif %}
+            
+            {% if faculty.phone %}
+            <div class="flex items-center">
+                <i class="fas fa-phone text-gray-500 mr-2"></i>
+                <a href="tel:{{ faculty.phone }}" class="text-blue-600 hover:text-blue-800 text-sm">
+                    {{ faculty.phone }}
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div> 

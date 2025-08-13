@@ -1,0 +1,138 @@
+{% extends 'website/base.html' %}
+{% load static %}
+
+{% block title %}ফলাফল | SchoolProject{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-gray-50 to-white py-8">
+    <div class="container mx-auto px-4">
+        <h1 class="text-4xl md:text-5xl font-bold text-center text-[var(--color-primary)] mb-8">
+            ফলাফল প্রকাশ
+        </h1>
+
+        <div x-data="{
+            activeTab: 'class',
+            activeClass: null,
+            activeDept: null,
+            results: [],
+            
+            async filterResults() {
+                let url = '{% url "filter_results" %}?';
+                
+                if (this.activeTab === 'class' && this.activeClass) {
+                    url += 'class_id=' + this.activeClass;
+                } 
+                else if (this.activeTab === 'dept' && this.activeDept) {
+                    url += 'dept_slug=' + this.activeDept;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                this.results = data.results;
+            },
+            
+            init() {
+                this.filterResults();
+            }
+        }" x-init="init()">
+            <!-- Filter Selection -->
+            <div class="flex justify-center mb-8">
+                <div class="inline-flex rounded-md shadow-sm">
+                    <button @click="activeTab = 'class'; activeDept = null; filterResults();" 
+                            :class="activeTab === 'class' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-l-lg border border-gray-300 font-medium">
+                        <i class="fas fa-graduation-cap mr-2"></i> শ্রেণি অনুযায়ী
+                    </button>
+                    <button @click="activeTab = 'dept'; activeClass = null; filterResults();" 
+                            :class="activeTab === 'dept' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                            class="px-6 py-2 rounded-r-lg border border-gray-300 font-medium">
+                        <i class="fas fa-building mr-2"></i> বিভাগ অনুযায়ী
+                    </button>
+                </div>
+            </div>
+
+            <!-- Class/Department Filters -->
+            <div class="mb-8">
+                <!-- Class Filter -->
+                <div x-show="activeTab === 'class'" x-transition class="text-center">
+                    <h3 class="text-xl font-semibold mb-3">শ্রেণি নির্বাচন করুন</h3>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        {% for class in classes %}
+                        <button @click="activeClass = {{ class.id }}; filterResults();"
+                                :class="activeClass === {{ class.id }} ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                                class="px-4 py-1 rounded-full border border-gray-300 transition-colors duration-200">
+                            {{ class.name }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Department Filter -->
+                <div x-show="activeTab === 'dept'" x-transition class="text-center">
+                    <h3 class="text-xl font-semibold mb-3">বিভাগ নির্বাচন করুন</h3>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        {% for dept in departments %}
+                        <button @click="activeDept = '{{ dept.slug }}'; filterResults();"
+                                :class="activeDept === '{{ dept.slug }}' ? 'bg-[var(--color-primary)] text-white' : 'bg-white text-gray-700 hover:bg-gray-100'"
+                                class="px-4 py-1 rounded-full border border-gray-300 transition-colors duration-200">
+                            {{ dept.name }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result List Container -->
+            <div id="result-list-container">
+                <div class="overflow-hidden rounded-lg shadow-lg border border-gray-200">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gradient-to-r from-[var(--color-primary)] to-purple-600">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">ক্রমিক</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">শিরোনাম</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">আপডেট</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">একশন</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <template x-for="(result, index) in results" :key="result.id">
+                                <tr class="hover:bg-gray-50 transition-colors duration-150">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" x-text="index + 1"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-gray-900" x-text="result.title"></div>
+                                        <div class="text-sm text-gray-500">
+                                            <span x-text="result.class_name"></span>
+                                            <span x-text="result.department"></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" x-text="result.updated_at"></td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-3">
+                                            <a :href="result.file_url" target="_blank"
+                                                    class="text-blue-600 hover:text-blue-900">
+                                                <i class="fas fa-eye"></i> দেখুন
+                                            </a>
+                                            <a :href="result.download_url"
+                                               class="text-green-600 hover:text-green-900">
+                                                <i class="fas fa-download"></i> ডাউনলোড
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                            <template x-if="results.length === 0">
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                        <i class="fas fa-file-alt text-3xl mb-2 text-gray-400"></i>
+                                        <p>কোন ফলাফল পাওয়া যায়নি</p>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

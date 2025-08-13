@@ -1,0 +1,30 @@
+<div class="facility-card bg-white rounded-2xl shadow-lg overflow-hidden transform transition-all duration-500 hover:scale-105 hover:shadow-2xl"
+     data-facility-type="{{ facility.facility_type.name }}">
+    {% if facility.image %}
+    <div class="h-48 overflow-hidden">
+        <img src="{{ facility.image.url }}" alt="{{ facility.title }}" 
+             class="w-full h-full object-cover transition-transform duration-500 hover:scale-110">
+    </div>
+    {% else %}
+    <div class="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+        <i class="{{ facility.icon }} text-6xl text-white"></i>
+    </div>
+    {% endif %}
+    
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-gray-800">{{ facility.title }}</h3>
+            <div class="text-right">
+                <div class="text-3xl font-bold text-blue-600">{{ facility.count }}</div>
+                <div class="text-sm text-gray-500">{{ facility.unit }}</div>
+            </div>
+        </div>
+        <p class="text-gray-600 leading-relaxed">{{ facility.description }}</p>
+        
+        <div class="mt-4">
+            <span class="inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-3 py-1 rounded-full">
+                {{ facility.facility_type.name }}
+            </span>
+        </div>
+    </div>
+</div>

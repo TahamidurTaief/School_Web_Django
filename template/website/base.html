@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% if school_info %}{{ school_info.name }}{% else %}School Website{% endif %}</title>
+    {% if school_info.favicon %}
+        <link rel="icon" href="{{ school_info.favicon.url }}">
+    {% endif %}
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@hotwired/turbo@latest/dist/turbo.es2017-esm.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    {% if debug %}
+    <script defer src="{% url 'django_browser_reload:javascript' %}"></script>
+    {% endif %}
+
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-100">
+
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        {% include 'website/include/navbar.html' %}
+    </header>
+
+    <main>
+        <turbo-frame id="main-content">
+            {% block content %}{% endblock %}
+        </turbo-frame>
+    </main>
+
+    <div id="page-footer" data-turbo-permanent>
+        <div hx-get="{% url 'footer' %}" hx-trigger="load" hx-swap="outerHTML">
+            <div class="text-center p-4 bg-gray-800 text-white">Loading Footer...</div>
+        </div>
+    </div>
+
+</body>
+</html>

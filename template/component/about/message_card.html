@@ -1,0 +1,83 @@
+<!-- Message Card Component with Full Height Image on Right Side -->
+<div x-data="{ expanded: false }" class="bg-white rounded-lg shadow-md border-l-4 border-blue-500 overflow-hidden transition-all duration-300 hover:shadow-lg">
+    <!-- Two Grid Layout -->
+    <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 min-h-[200px]">
+        <!-- Content Section (Left Side) -->
+        <div class="md:col-span-2 lg:col-span-3 p-6 flex flex-col justify-between">
+            <!-- Header Content -->
+            <div class="mb-4">
+                <!-- Name and Position -->
+                <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-2">{{ message.name }}</h3>
+                <p class="text-blue-600 font-semibold text-lg mb-3">{{ message.position }}</p>
+                {% if message.title %}
+                <p class="text-gray-600 text-sm bg-gray-100 px-3 py-1 rounded-full inline-block mb-3">{{ message.title }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Message Section -->
+            <div class="flex-grow">
+                <!-- Message Preview (with line-clamp) -->
+                <div x-show="!expanded" 
+                     class="text-gray-700 leading-relaxed text-justify">
+                    <p class="line-clamp-3">{{ message.message }}</p>
+                </div>
+                
+                <!-- Full Message -->
+                <div x-show="expanded" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform scale-95"
+                     x-transition:enter-end="opacity-100 transform scale-100"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 transform scale-100"
+                     x-transition:leave-end="opacity-0 transform scale-95"
+                     class="text-gray-700 leading-relaxed text-justify">
+                    <p class="whitespace-pre-line">{{ message.message }}</p>
+                </div>
+            </div>
+            
+            <!-- Toggle Button -->
+            <div class="mt-4">
+                <button @click="expanded = !expanded" 
+                        class="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <span x-show="!expanded" class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                        বিস্তারিত
+                    </span>
+                    <span x-show="expanded" class="flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                        </svg>
+                        বন্ধ করুন
+                    </span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Photo Section (Right Side - Passport Size) -->
+        {% if message.photo %}
+        <div class="md:col-span-1 lg:col-span-1 flex items-start justify-center p-4">
+            <div class="relative">
+                <img src="{{ message.photo.url }}" 
+                     alt="{{ message.name }}" 
+                     class="w-32 h-40 md:w-36 md:h-48 lg:w-40 lg:h-52 object-cover rounded-lg border-2 border-gray-200 shadow-md">
+                
+                <!-- Subtle overlay for better visual appeal -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent rounded-lg"></div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Custom CSS for line-clamp (if not available in your Tailwind build) -->
+<style>
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+</style>
