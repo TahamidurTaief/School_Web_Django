@@ -36,8 +36,8 @@
     {# Recent Events Section - রিসেন্ট ইভেন্টস #}
     {% if recent_events %}
         <section class="py-8 bg-gray-50">
-            <div class="container max-w-7xl mx-auto px-4">
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2 flex items-center">
+            <div class="container max-w-[90rem] mx-auto px-4">
+                <h2 class="sans text-2xl md:text-3xl font-semibold text-gray-800 mb-2 flex items-center">
                     সাম্প্রতিক
                 </h2>
                 <div class="h-1 w-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full transform transition-all duration-500 group-hover:w-40 group-hover:h-2 mb-4"></div>
@@ -97,7 +97,7 @@
                                     আরও ছবি
                                 </h3>
                                 <div class="image-slider relative">
-                                    <div id="homeModalSlidercontainer max-w-7xl" class="slider-container max-w-7xl"></div>
+                                    <div id="homeModalSlidercontainer max-w-[90rem]" class="slider-container max-w-[90rem]"></div>
                                     <div id="homeModalSliderControls" class="slider-controls"></div>
                                 </div>
                             </div>
@@ -168,7 +168,7 @@
     border-radius: 12px;
 }
 
-.slider-container max-w-7xl {
+.slider-container max-w-[90rem] {
     position: relative;
     width: 100%;
     height: 100%;
@@ -258,11 +258,11 @@ async function openHomeEventModal(eventId) {
             if (data.gallery_images && data.gallery_images.length > 0) {
                 gallery.classList.remove('hidden');
                 
-                const slidercontainer max-w-7xl = document.getElementById('homeModalSlidercontainer max-w-7xl');
+                const slidercontainer max-w-[90rem] = document.getElementById('homeModalSlidercontainer max-w-[90rem]');
                 const sliderControls = document.getElementById('homeModalSliderControls');
                 
                 // Build gallery slider
-                slidercontainer max-w-7xl.innerHTML = data.gallery_images.map((img, index) => 
+                slidercontainer max-w-[90rem].innerHTML = data.gallery_images.map((img, index) => 
                     `<img src="${img.url}" alt="${img.title || data.title}" class="slider-image ${index === 0 ? 'active' : ''}">`
                 ).join('');
                 
@@ -302,10 +302,10 @@ function closeHomeEventModal() {
 }
 
 function initializeHomeModalSlider() {
-    const container max-w-7xl = document.getElementById('homeModalSlidercontainer max-w-7xl');
+    const container max-w-[90rem] = document.getElementById('homeModalSlidercontainer max-w-[90rem]');
     const controls = document.getElementById('homeModalSliderControls');
     const dots = controls.querySelectorAll('.slider-dot');
-    const images = container max-w-7xl.querySelectorAll('.slider-image');
+    const images = container max-w-[90rem].querySelectorAll('.slider-image');
     let currentSlide = 0;
 
     // Auto play functionality

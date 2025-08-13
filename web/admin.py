@@ -66,12 +66,7 @@ class AdmissionResource(resources.ModelResource):
     class Meta:
         model = Admission
 
-class PrincipalMessageResource(resources.ModelResource):
-    role = fields.Field(attribute='role', widget=ForeignKeyWidget(PrincipalRole, field='name'))
 
-    class Meta:
-        model = PrincipalMessage
-        
 class FacilityInfoResource(resources.ModelResource):
     facility_type = fields.Field(attribute='facility_type', widget=ForeignKeyWidget(FacilityType, field='name'))
 
@@ -282,60 +277,6 @@ class VideoAdmin(CustomModelAdmin):
         return "No video"
     video_preview.short_description = "Video Preview"
 
-@admin.register(PrincipalRole)
-class PrincipalRoleAdmin(CustomModelAdmin):
-    list_display = ('name', 'is_active', 'order')
-    list_editable = ('is_active', 'order')
-    search_fields = ('name',)
-
-@admin.register(PrincipalMessage)
-class PrincipalMessageAdmin(CustomModelAdmin):
-    resource_class = PrincipalMessageResource
-    list_display = ('name', 'role', 'is_active', 'show_on_home_page', 'preview_message', 'created_at')
-    list_filter = ('role', 'is_active', 'show_on_home_page', 'created_at')
-    list_editable = ('is_active', 'show_on_home_page')
-    search_fields = ('name', 'message')
-    autocomplete_fields = ('role',)
-    readonly_fields = ('created_at', 'updated_at')
-    ordering = ('-show_on_home_page', 'order', '-created_at')
-    
-    fieldsets = (
-        ("Message Details", {"fields": ('name', 'role', 'message', 'photo')}),
-        ("Display Options", {"fields": ('is_active', 'show_on_home_page', 'order')}),
-        ("Timestamps", {"fields": ('created_at', 'updated_at'), "classes": ["collapse"]}),
-    )
-    
-    def preview_message(self, obj):
-        if obj.message:
-            return format_html(
-                '<span title="{}">{}</span>',
-                obj.message[:100] + '...' if len(obj.message) > 100 else obj.message,
-                obj.message[:50] + '...' if len(obj.message) > 50 else obj.message
-            )
-        return '-'
-    preview_message.short_description = 'Message Preview'
-    
-    actions = ['set_as_home_featured', 'deactivate_messages', 'activate_messages']
-    
-    def set_as_home_featured(self, request, queryset):
-        if queryset.count() > 1:
-            self.message_user(request, "Please select only one message to feature on home page.", level='ERROR')
-            return
-            
-        PrincipalMessage.objects.filter(show_on_home_page=True).update(show_on_home_page=False)
-        queryset.update(show_on_home_page=True, is_active=True)
-        self.message_user(request, "Message has been set as featured on home page.")
-    set_as_home_featured.short_description = "Set as featured on home page"
-    
-    def deactivate_messages(self, request, queryset):
-        updated = queryset.update(is_active=False)
-        self.message_user(request, f"{updated} message(s) deactivated.")
-    deactivate_messages.short_description = "Deactivate selected messages"
-    
-    def activate_messages(self, request, queryset):
-        updated = queryset.update(is_active=True)
-        self.message_user(request, f"{updated} message(s) activated.")
-    activate_messages.short_description = "Activate selected messages"
 
 @admin.register(ImportantLink)
 class ImportantLinkAdmin(CustomModelAdmin):

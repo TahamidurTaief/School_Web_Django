@@ -21,7 +21,7 @@
             <div class="w-full h-full bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
                 <div class="text-center text-white">
                     <i class="fas fa-university text-8xl mb-4 opacity-50"></i>
-                    <h3 class="text-3xl font-bold">আমাদের সম্পর্কে</h3>
+                    <h3 class="hind  text-3xl font-bold">আমাদের সম্পর্কে</h3>
                     <p class="text-lg opacity-75">একটি আধুনিক ও মানসম্পন্ন শিক্ষা প্রতিষ্ঠান</p>
                 </div>
             </div>
@@ -41,10 +41,10 @@
         
         <div class="absolute inset-0 flex items-center justify-center">
             <div class="text-center text-white z-10">
-                <h1 class="text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
+                <h1 class="hind text-5xl md:text-6xl font-bold mb-4 animate-fade-in-up">
                     {{ about_content.title }}
                 </h1>
-                <p class="text-xl md:text-2xl mb-8 animate-fade-in-up-delay">
+                <p class="sans text-xl md:text-2xl mb-8 animate-fade-in-up-delay">
                     একটি আধুনিক ও মানসম্পন্ন শিক্ষা প্রতিষ্ঠান
                 </p>
             </div>
@@ -54,7 +54,7 @@
 
 {% if info_service %}
 <section class="py-16 bg-gray-50">
-    <div class="container max-w-7xl mx-auto px-4">
+    <div class="container max-w-[90rem] mx-auto px-4">
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold text-gray-800 mb-4">{{ info_service.title }}</h2>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto">{{ info_service.description }}</p>
@@ -64,20 +64,15 @@
 {% endif %}
 
 <div class="bg-white">
-    <div class="container max-w-7xl mx-auto px-4">
+    <div class="container max-w-[90rem] mx-auto px-4">
         
         <section id="history-section" class="py-16">
-            {% include 'component/about/history.html' with history=about_content.history %}
+            {% include 'component/home/history.html' with history=school_info.history %}
         </section>
 
-        {% if principal_message %}
-        <section class="py-16">
-            {% include 'component/about/principal_message.html' with principal_message=principal_message %}
-        </section>
-        {% endif %}
 
         {% if messages %}
-        <section class="py-16 bg-gray-50 -mx-4 px-4">
+        <section class="py-16">
             {% include 'component/about/messages_section.html' with messages=messages %}
         </section>
         {% endif %}
@@ -86,7 +81,7 @@
             {% include 'component/about/brief_info.html' with brief_info=about_content.brief_info %}
         </section>
 
-         <section class="py-16 bg-gray-50 -mx-4 px-4">
+         <section class="py-16 ">
             <div class="grid md:grid-cols-2 gap-8">
                 <div>
                     {% include 'component/about/approval.html' with approval=about_content.approval %}
@@ -102,7 +97,7 @@
 
         {% if facility_groups %}
         <section class="py-16 bg-white -mx-4 px-4">
-            <div class="container max-w-7xl mx-auto">
+            <div class="container max-w-[90rem] mx-auto">
                 <div class="text-center mb-12">
                     <h2 class="text-4xl font-bold text-gray-800 mb-4">প্রতিষ্ঠানের সুবিধাসমূহ</h2>
                     <p class="text-lg text-gray-600">আমাদের প্রতিষ্ঠানের আধুনিক সুযোগ-সুবিধা সম্পর্কে জানুন</p>
@@ -123,7 +118,7 @@
                     {% endfor %}
                 </div>
 
-                <div id="facilities-container max-w-7xl" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div id="facilities-container max-w-[90rem]" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {% for facility_type, facilities in facility_groups.items %}
                         {% for facility in facilities %}
                             {% include 'component/information_service/facility_card.html' with facility=facility %}
@@ -136,7 +131,7 @@
 
         {% if faculty_members %}
         <section class="py-16">
-            <div class="container max-w-7xl mx-auto">
+            <div class="container max-w-[90rem] mx-auto">
                 <div class="text-center mb-12">
                     <h2 class="text-4xl font-bold text-gray-800 mb-4">আমাদের শিক্ষকবৃন্দ</h2>
                     <p class="text-lg text-gray-600">আমাদের অভিজ্ঞ এবং দক্ষ শিক্ষকমণ্ডলী</p>

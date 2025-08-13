@@ -22,10 +22,10 @@ def home(request):
     brief_info_obj = SchoolBriefInfo.objects.filter(is_active=True).first()
     school_history = SchoolHistory.objects.all().first()
     gallery_images = Gallery.objects.all().order_by('-created_at')[:12]
-    principal_message = PrincipalMessage.objects.filter(
+    principal_message = AboutMessage.objects.filter(
         is_active=True, 
         show_on_home_page=True
-    ).select_related('role').first()
+    ).first()
     
     # Fetch all featured AboutMessage for the home page, ordered by serial_no
     messages = AboutMessage.objects.filter(is_active=True, show_on_home_page=True).order_by('serial_no')
@@ -269,15 +269,13 @@ def about(request):
     try:
         # === EXISTING ABOUT PAGE DATA ===
         about_page = AboutPage.objects.filter(is_active=True).first()
-        history = SchoolHistory.objects.all().first()
+        school_history = SchoolHistory.objects.all().first()
         brief_info = SchoolBriefInfo.objects.filter(is_active=True).first()
         
         principal_message_obj = (
-            PrincipalMessage.objects.filter(is_active=True, show_on_home_page=True)
-            .select_related('role')
+            AboutMessage.objects.filter(is_active=True, show_on_home_page=True)
             .first()
-            or PrincipalMessage.objects.filter(is_active=True)
-            .select_related('role')
+            or AboutMessage.objects.filter(is_active=True)
             .order_by('order', '-created_at')
             .first()
         )
@@ -326,8 +324,8 @@ def about(request):
         about_content = {
             'title': about_page.title if about_page else 'আমাদের সম্পর্কে (About Us)',
             'history': {
-                'title': history.title if history else 'প্রতিষ্ঠানের ইতিহাস',
-                'content': history.content if history else 'ইতিহাসের তথ্য পাওয়া যায়নি।'
+                'title': school_history.title if school_history else 'প্রতিষ্ঠানের ইতিহাস',
+                'content': school_history.content if school_history else 'ইতিহাসের তথ্য পাওয়া যায়নি।'
             },
             'brief_info': {
                 'title': brief_info.title if brief_info else 'সংক্ষিপ্ত তথ্য',
@@ -387,6 +385,7 @@ def about(request):
             'facility_groups': facility_groups, # Pass the new, ordered, and complete groups
             'faculty_members': faculty_members,
             'info_service': info_service,
+            'school_history': school_history, 
         }
         
         return render(request, 'website/about.html', context)
@@ -1059,7 +1058,7 @@ def api_principal_message(request):
     Useful for AJAX calls or mobile apps
     """
     try:
-        principal_message = PrincipalMessage.objects.filter(
+        principal_message = AboutMessage.objects.filter(
             is_active=True, 
             show_on_home_page=True
         ).select_related('role').first()

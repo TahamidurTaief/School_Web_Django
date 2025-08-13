@@ -1,6 +1,6 @@
 {% load static %}
 <footer class="bg-gray-800 text-gray-300 pt-12">
-    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="container mx-auto max-w-[90rem] px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
             
             <!-- Column 1: School Info -->
@@ -81,7 +81,7 @@
 
     <!-- Bottom Bar with Credit -->
     <div class="mt-8 border-t border-gray-700">
-        <div class="container mx-auto max-w-7xl px-4 py-4 flex flex-col sm:flex-row justify-between items-center text-sm">
+        <div class="container mx-auto max-w-[90rem] px-4 py-4 flex flex-col sm:flex-row justify-between items-center text-sm">
             <p>&copy; {% now "Y" %} {{ school_info.name|default:"Your School" }}. All Rights Reserved.</p>
             <p class="mt-2 sm:mt-0">
                 Developed by <a href="https://www.exeyezone.com" target="_blank" rel="noopener noreferrer" class="font-semibold text-white hover:underline">exeyezone.com</a>

@@ -62,7 +62,7 @@
 <!-- Information Service Content -->
 {% if info_service %}
 <section class="py-16 bg-gray-50">
-    <div class="container mx-auto max-w-7xl px-4">
+    <div class="container mx-auto max-w-[90rem] px-4">
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold text-gray-800 mb-4">{{ info_service.title }}</h2>
             <p class="text-lg text-gray-600 max-w-3xl mx-auto">{{ info_service.description }}</p>
@@ -73,7 +73,7 @@
 
 <!-- Facilities Section -->
 <section class="py-16 bg-white">
-    <div class="container mx-auto max-w-7xl px-4">
+    <div class="container mx-auto max-w-[90rem] px-4">
         <!-- Section Header -->
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold text-gray-800 mb-4">প্রতিষ্ঠানের সুবিধাসমূহ</h2>
@@ -99,7 +99,7 @@
         {% endif %}
 
         <!-- Facilities Grid -->
-        <div id="facilities-container max-w-7xl mx-auto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="facilities-container max-w-[90rem] mx-auto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {% for facility_type, facilities in facility_groups.items %}
                 {% for facility in facilities %}
                     {% include 'component/information_service/facility_card.html' with facility=facility %}
@@ -120,7 +120,7 @@
 
 <!-- Statistics Section -->
 <section class="py-16 bg-gradient-to-r from-blue-900 to-purple-900 text-white">
-    <div class="container mx-auto max-w-7xl px-4">
+    <div class="container mx-auto max-w-[90rem] px-4">
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold mb-4">সংখ্যায় আমাদের প্রতিষ্ঠান</h2>
             <p class="text-xl opacity-90">গত কয়েক বছরে আমাদের অর্জন</p>
@@ -148,7 +148,7 @@
 
 <!-- Faculty Section -->
 <section class="py-16 bg-gray-50">
-    <div class="container mx-auto max-w-7xl px-4">
+    <div class="container mx-auto max-w-[90rem] px-4">
         <!-- Section Header -->
         <div class="text-center mb-12">
             <h2 class="text-4xl font-bold text-gray-800 mb-4">আমাদের শিক্ষকবৃন্দ</h2>
@@ -175,7 +175,7 @@
 
 <!-- Call to Action -->
 <section class="py-16 bg-white">
-    <div class="container mx-auto max-w-7xl px-4 text-center">
+    <div class="container mx-auto max-w-[90rem] px-4 text-center">
         <h2 class="text-3xl font-bold text-gray-800 mb-4">আরও তথ্য জানতে চান?</h2>
         <p class="text-lg text-gray-600 mb-8">আমাদের সাথে যোগাযোগ করুন</p>
         <div class="flex flex-col sm:flex-row justify-center gap-4">
