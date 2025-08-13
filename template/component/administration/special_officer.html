@@ -1,12 +1,13 @@
 {% load static %}
-<section class="container mx-auto my-10">
+{% if officer %}
+<section class="container  max-w-[90rem] w-full mx-auto my-10">
     <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-[var(--color-primary)] mb-2">অভিযোগ গ্রহণকারী কর্মকর্তা</h2>
+        <h2 class="sans text-3xl md:text-4xl font-semibold text-[var(--color-primary)] mb-2">অভিযোগ গ্রহণকারী কর্মকর্তা</h2>
         <div class="h-1 w-24 mx-auto bg-gradient-to-r from-blue-600 to-purple-600 rounded-full transform transition-all duration-500 hover:w-32"></div>
         <p class="mt-4 text-gray-600">প্রতিষ্ঠানের প্রশাসনিক দায়িত্বে নিয়োজিত ব্যক্তিবর্গ</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8" x-data="{ activeCard: null }">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8" x-data="{ activeCard: null }">
         {% for officer in special_officers %}
         <div class="relative group" 
              @mouseenter="activeCard = {{ forloop.counter }}" 
@@ -36,3 +37,4 @@
         {% endfor %}
     </div>
 </section>
+{% endif %}

@@ -1,12 +1,13 @@
 {% load static %}
-<section class="container mx-auto my-16">
+{% if administration_members %}
+<section class="container mx-auto max-w-[90rem] w-full my-16">
     <div class="text-center mb-12">
-        <h2 class="text-3xl md:text-4xl font-bold text-[var(--color-primary)] mb-2">প্রশাসনিক কর্মকর্তা</h2>
+        <h2 class="sans text-3xl md:text-4xl font-semibold text-[var(--color-primary)] mb-2">প্রশাসনিক কর্মকর্তা</h2>
         <div class="h-1 w-24 mx-auto bg-gradient-to-r from-blue-600 to-purple-600 rounded-full transform transition-all duration-500 hover:w-32"></div>
         <p class="mt-4 text-gray-600">প্রতিষ্ঠানের প্রশাসনিক দায়িত্বে নিয়োজিত ব্যক্তিবর্গ</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
         {% for faculty in administration_members %}
           {% include 'component/administration/administration_card.html' with faculty=faculty %}
         {% empty %}
@@ -16,3 +17,4 @@
         {% endfor %}
     </div>
 </section>
+{% endif %}
