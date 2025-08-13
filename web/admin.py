@@ -96,9 +96,19 @@ class SchoolInfoAdmin(CustomModelAdmin):
     
 @admin.register(Department)
 class DepartmentAdmin(CustomModelAdmin):
-    list_display = ('name', 'name_en', 'slug')
+    list_display = ('name', 'name_en', 'slug', 'male_student', 'female_student', 'total_students')
     search_fields = ('name', 'name_en')
     prepopulated_fields = {'slug': ('name_en',)}
+    list_editable = ('male_student', 'female_student')
+
+    def total_students(self, obj):
+        return obj.total_students
+    total_students.short_description = 'Total Students (Manual)'
+
+    def delete_model(self, request, obj):
+        obj.students.update(class_name=None)
+        super().delete_model(request, obj)
+
 
 @admin.register(Class)
 class ClassAdmin(CustomModelAdmin):
@@ -115,23 +125,23 @@ class ClassAdmin(CustomModelAdmin):
         obj.students.update(class_name=None)
         super().delete_model(request, obj)
 
-@admin.register(Teacher)
-class TeacherAdmin(CustomModelAdmin):
-    list_display = ('name', 'position', 'category', 'email', 'phone', 'image_preview')
-    list_filter = ('category', 'is_special_officer')
-    search_fields = ('name', 'position', 'email', 'phone')
-    fieldsets = (
-        (None, {'fields': ('name', 'position', 'photo')}),
-        ('Categorization', {'fields': ('category', 'is_special_officer')}),
-        ('Qualifications', {'fields': ('education', 'specialization', 'experience')}),
-        ('Contact', {'fields': ('email', 'phone')}),
-        ('Social Media', {'classes': ('collapse',), 'fields': ('facebook', 'twitter', 'linkedin')}),
-    )
-    def image_preview(self, obj):
-        if obj.photo:
-            return format_html('<img src="{}" width="60" height="60" style="object-fit: cover; border-radius: 5px;" />', obj.photo.url)
-        return "No Image"
-    image_preview.short_description = 'Photo'
+# @admin.register(Teacher)
+# class TeacherAdmin(CustomModelAdmin):
+#     list_display = ('name', 'position', 'category', 'email', 'phone', 'image_preview')
+#     list_filter = ('category', 'is_special_officer')
+#     search_fields = ('name', 'position', 'email', 'phone')
+#     fieldsets = (
+#         (None, {'fields': ('name', 'position', 'photo')}),
+#         ('Categorization', {'fields': ('category', 'is_special_officer')}),
+#         ('Qualifications', {'fields': ('education', 'specialization', 'experience')}),
+#         ('Contact', {'fields': ('email', 'phone')}),
+#         ('Social Media', {'classes': ('collapse',), 'fields': ('facebook', 'twitter', 'linkedin')}),
+#     )
+#     def image_preview(self, obj):
+#         if obj.photo:
+#             return format_html('<img src="{}" width="60" height="60" style="object-fit: cover; border-radius: 5px;" />', obj.photo.url)
+#         return "No Image"
+#     image_preview.short_description = 'Photo'
 
 @admin.register(FacultyMember)
 class FacultyMemberAdmin(CustomModelAdmin):
@@ -372,25 +382,25 @@ class EventAndNewsImageInline(admin.TabularInline):
 
 EventAndNewsAdmin.inlines = [EventAndNewsImageInline]
 
-@admin.register(AboutLink)
-class AboutLinkAdmin(CustomModelAdmin):
-    list_display = ('title', 'url', 'is_active', 'order')
-    list_editable = ('is_active', 'order')
-    search_fields = ('title',)
+# @admin.register(AboutLink)
+# class AboutLinkAdmin(CustomModelAdmin):
+#     list_display = ('title', 'url', 'is_active', 'order')
+#     list_editable = ('is_active', 'order')
+#     search_fields = ('title',)
     
-@admin.register(InformationService)
-class InformationServiceAdmin(CustomModelAdmin):
-    list_display = ('title', 'is_active')
+# @admin.register(InformationService)
+# class InformationServiceAdmin(CustomModelAdmin):
+#     list_display = ('title', 'is_active')
 
-@admin.register(InformationSlider)
-class InformationSliderAdmin(CustomModelAdmin):
-    list_display = ('title', 'order', 'is_active', 'image_preview')
-    list_editable = ('order', 'is_active')
-    def image_preview(self, obj):
-        if obj.image:
-            return format_html('<img src="{}" width="100" style="border-radius: 5px;" />', obj.image.url)
-        return "No Image"
-    image_preview.short_description = 'Preview'
+# @admin.register(InformationSlider)
+# class InformationSliderAdmin(CustomModelAdmin):
+#     list_display = ('title', 'order', 'is_active', 'image_preview')
+#     list_editable = ('order', 'is_active')
+#     def image_preview(self, obj):
+#         if obj.image:
+#             return format_html('<img src="{}" width="100" style="border-radius: 5px;" />', obj.image.url)
+#         return "No Image"
+#     image_preview.short_description = 'Preview'
 
 @admin.register(FacilityInfo)
 class FacilityInfoAdmin(CustomModelAdmin):

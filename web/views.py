@@ -10,7 +10,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.utils.translation import gettext as _
 import os
-from .models import Teacher, FacultyMember
 from django.urls import reverse
 from collections import OrderedDict
 from django.template.loader import render_to_string
@@ -208,23 +207,24 @@ def filter_students(request):
             pass # Counts will remain 0, display_students will be empty
     
     elif dept_slug:
-        # Find all classes associated with the students in the given department
-        classes_in_dept = Class.objects.filter(students__department__slug=dept_slug).distinct()
+        # Get students from publicly visible classes first
+        visible_class_ids = Class.objects.filter(
+            students__department__slug=dept_slug,
+            show_students_publicly=True
+        ).distinct().values_list('id', flat=True)
         
-        # Sum the manual counts from those classes
-        aggregation = classes_in_dept.aggregate(
-            total_male=Sum('male_student'),
-            total_female=Sum('female_student')
-        )
-        male_count = aggregation['total_male'] or 0
-        female_count = aggregation['total_female'] or 0
-        
-        # Get students from publicly visible classes within that department
-        visible_class_ids = classes_in_dept.filter(show_students_publicly=True).values_list('id', flat=True)
         display_students = Student.objects.filter(
             department__slug=dept_slug,
             class_name_id__in=visible_class_ids
         ).select_related('class_name', 'department')
+
+        # Get the department and use its direct manual counts
+        try:
+            department = Department.objects.get(slug=dept_slug)
+            male_count = department.male_student
+            female_count = department.female_student
+        except Department.DoesNotExist:
+            pass # Counts remain 0
 
     # Serialize student data
     students_data = [{
@@ -290,7 +290,7 @@ def about(request):
             aim_points = AimPoint.objects.filter(aim=aims, is_active=True).order_by('order')
         
         news_items = EventAndNews.objects.filter(status=True, type='NEWS').prefetch_related('gallery_images').order_by('-created_at')[:3]
-        links = AboutLink.objects.filter(is_active=True).order_by('order')[:5]
+        links = ImportantLink.objects.filter(is_active=True).order_by('order')[:5]
         
         # === NEW: INFORMATION SERVICE DATA FOR MODERN UI ===
         slider_images = Slider.objects.filter(is_active=True).exclude(image='').order_by('-created_at')
@@ -825,43 +825,43 @@ def filter_gallery_videos(request):
     return JsonResponse({'videos': videos_data})
 
 
-def information_service(request):
-    """Information Service Center page"""
-    # Get slider images
-    slider_images = InformationSlider.objects.filter(is_active=True).order_by('order')
+# def information_service(request):
+#     """Information Service Center page"""
+#     # Get slider images
+#     slider_images = InformationSlider.objects.filter(is_active=True).order_by('order')
     
-    # If no slider images, create a default one
-    if not slider_images.exists():
-        slider_images = [InformationSlider(
-            title='তথ্য সেবা কেন্দ্র',
-            description='আমাদের প্রতিষ্ঠানের সকল তথ্য একসাথে',
-            order=1,
-            is_active=True
-        )]
+#     # If no slider images, create a default one
+#     if not slider_images.exists():
+#         slider_images = [InformationSlider(
+#             title='তথ্য সেবা কেন্দ্র',
+#             description='আমাদের প্রতিষ্ঠানের সকল তথ্য একসাথে',
+#             order=1,
+#             is_active=True
+#         )]
     
-    # Get all facility information
-    facilities = FacilityInfo.objects.filter(is_active=True).order_by('order')
+#     # Get all facility information
+#     facilities = FacilityInfo.objects.filter(is_active=True).order_by('order')
     
-    # Group facilities by type
-    facility_groups = {}
-    for facility in facilities:
-        if facility.facility_type not in facility_groups:
-            facility_groups[facility.facility_type] = []
-        facility_groups[facility.facility_type].append(facility)
+#     # Group facilities by type
+#     facility_groups = {}
+#     for facility in facilities:
+#         if facility.facility_type not in facility_groups:
+#             facility_groups[facility.facility_type] = []
+#         facility_groups[facility.facility_type].append(facility)
     
-    # Get faculty information
-    faculty_members = FacultyInfo.objects.filter(is_active=True).order_by('order')
+#     # Get faculty information
+#     faculty_members = FacultyInfo.objects.filter(is_active=True).order_by('order')
     
-    # Get information service content
-    info_service = InformationService.objects.filter(is_active=True).first()
+#     # Get information service content
+#     info_service = InformationService.objects.filter(is_active=True).first()
     
-    context = {
-        'slider_images': slider_images,
-        'facility_groups': facility_groups,
-        'faculty_members': faculty_members,
-        'info_service': info_service,
-    }
-    return render(request, 'website/information_service.html', context)
+#     context = {
+#         'slider_images': slider_images,
+#         'facility_groups': facility_groups,
+#         'faculty_members': faculty_members,
+#         'info_service': info_service,
+#     }
+#     return render(request, 'website/information_service.html', context)
 
 
 def filter_facilities(request):
@@ -1047,8 +1047,6 @@ def event_news_detail(request, pk):
     except EventAndNews.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Item not found'})
 
-
-    
 
 
 

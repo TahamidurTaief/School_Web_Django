@@ -19,6 +19,9 @@ class NoticeType(TimeStampModel):
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
+    class Meta:
+        verbose_name_plural = "নোটিশের ধরন"
+
     def __str__(self):
         return self.name
 
@@ -35,7 +38,7 @@ class Notice(TimeStampModel):
     is_active = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name_plural = "Notices"
+        verbose_name_plural = "নোটিশসমূহ"
         ordering = ['-created_at']
 
     def __str__(self):
